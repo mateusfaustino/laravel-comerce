@@ -25,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         : 0;
 
     return (
-        <div className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl dark:bg-[#161615]">
+        <Link href={`/produto/${product.id}`} className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl dark:bg-[#161615]">
             {/* Badge */}
             {product.isNew && (
                 <span className="absolute left-3 top-3 z-10 rounded-sm bg-[#f53003] px-2 py-1 text-xs font-semibold text-white">
@@ -49,6 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 
                 {/* Quick Add Button */}
                 <button
+                    onClick={(e) => e.preventDefault()}
                     className="absolute bottom-0 left-0 right-0 translate-y-full bg-[#f53003] py-3 text-center text-sm font-semibold text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 focus:translate-y-0 focus:opacity-100"
                     aria-label={`Adicionar ${product.name} ao carrinho`}
                 >
@@ -114,6 +115,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                     ))}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

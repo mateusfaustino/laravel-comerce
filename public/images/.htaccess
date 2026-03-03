@@ -1,0 +1,23 @@
+# Enable directory listing for images
+Options +Indexes
+
+# Allow access to all files
+Require all granted
+
+# Set proper MIME types for webp images
+<IfModule mod_mime.c>
+    AddType image/webp .webp
+    AddType image/png .png
+    AddType image/jpeg .jpg .jpeg
+</IfModule>
+
+# Enable caching for better performance
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+</IfModule>
+
+# Disable directory listing protection
+DirectoryIndex disabled
