@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import ProductCard from '@/components/store/product-card';
 import CartModal from '@/components/store/cart-modal';
 import { products, Product } from '@/data/mock-store';
@@ -14,9 +14,24 @@ export default function ProductPage({ id }: ProductPageProps) {
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
 
+    // Get props from page context as fallback
+    const page = usePage();
+    const productIdFromPage = page.props.id as string | undefined;
+    
+    // Use either the prop directly or from page context
+    const finalId = id || productIdFromPage || '';
+
     // Convert id from string to number for comparison
-    const productId = parseInt(id, 10);
+    const productId = parseInt(finalId, 10);
+    
+    // Debug log
+    console.log('Product ID from URL:', finalId, 'Converted to number:', productId);
+    console.log('Page props:', page.props);
+    
     const product = products.find(p => p.id === productId);
+    
+    // Debug log
+    console.log('Found product:', product ? product.name : 'NOT FOUND');
 
     if (!product) {
         return (

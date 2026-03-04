@@ -7,7 +7,9 @@ Route::inertia('/', 'store-homepage', [
     'canRegister' => Features::enabled(Features::registration()),
 ])->name('home');
 
-Route::inertia('/produto/{id}', 'product-page')->name('product.show');
+Route::get('/produto/{id}', function ($id) {
+    return inertia('product-page', ['id' => $id]);
+})->name('product.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
