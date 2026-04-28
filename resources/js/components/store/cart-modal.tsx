@@ -1,55 +1,10 @@
 import { useState } from 'react';
-
-interface CartItem {
-    id: number;
-    productId: number;
-    name: string;
-    price: number;
-    quantity: number;
-    size: string;
-    color: string;
-    image: string;
-}
+import { Link } from '@inertiajs/react';
+import { useCart, CartItem } from '@/contexts/cart-context';
 
 export default function CartModal() {
     const [isOpen, setIsOpen] = useState(false);
-    const [cartItems, setCartItems] = useState<CartItem[]>([
-        {
-            id: 1,
-            productId: 1,
-            name: 'Conjunto Renda Floral',
-            price: 189.90,
-            quantity: 1,
-            size: 'M',
-            color: 'Preto',
-            image: 'https://images.unsplash.com/photo-1620799140408-ed5341cd2431?w=500&h=600&fit=crop',
-        },
-        {
-            id: 2,
-            productId: 2,
-            name: 'Body Elegance',
-            price: 259.90,
-            quantity: 1,
-            size: 'P',
-            color: 'Vermelho',
-            image: 'https://images.unsplash.com/photo-1596484552993-9c5950a38938?w=500&h=600&fit=crop',
-        },
-    ]);
-
-    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    const updateQuantity = (id: number, newQuantity: number) => {
-        if (newQuantity < 1) return;
-        setCartItems(items =>
-            items.map(item =>
-                item.id === id ? { ...item, quantity: newQuantity } : item
-            )
-        );
-    };
-
-    const removeItem = (id: number) => {
-        setCartItems(items => items.filter(item => item.id !== id));
-    };
+    const { items, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
 
     return (
         <>
@@ -73,9 +28,9 @@ export default function CartModal() {
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                     />
                 </svg>
-                {cartItems.length > 0 && (
+                {totalItems > 0 && (
                     <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#f53003] text-xs font-bold text-white">
-                        {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                        {totalItems}
                     </span>
                 )}
             </button>
@@ -120,7 +75,7 @@ export default function CartModal() {
 
                                 {/* Cart Items */}
                                 <div className="flex-1 space-y-4 overflow-y-auto px-4 py-6">
-                                    {cartItems.length === 0 ? (
+                                    {items.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center py-12 text-center">
                                             <svg
                                                 className="mb-4 h-16 w-16 text-gray-300 dark:text-gray-600"
@@ -140,7 +95,7 @@ export default function CartModal() {
                                             </p>
                                         </div>
                                     ) : (
-                                        cartItems.map((item) => (
+                                        items.map((item) => (
                                             <div
                                                 key={item.id}
                                                 className="flex gap-4"
@@ -209,22 +164,23 @@ export default function CartModal() {
                                 </div>
 
                                 {/* Footer */}
-                                {cartItems.length > 0 && (
+                                {items.length > 0 && (
                                     <div className="border-t border-gray-200 px-4 py-6 dark:border-gray-700">
                                         <div className="mb-4 flex justify-between text-base font-medium">
                                             <p className="text-gray-900 dark:text-white">Subtotal</p>
                                             <p className="text-gray-900 dark:text-white">
-                                                R$ {total.toFixed(2).replace('.', ',')}
+                                                R$ {totalPrice.toFixed(2).replace('.', ',')}
                                             </p>
                                         </div>
                                         <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
                                             Frete calculado no checkout
                                         </p>
-                                        <button
+                                        <Link
+                                            href="/checkout"
                                             className="flex w-full items-center justify-center rounded-md bg-[#f53003] px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-[#d42a02] focus:outline-none focus:ring-2 focus:ring-[#f53003] focus:ring-offset-2"
                                         >
                                             Finalizar Compra
-                                        </button>
+                                        </Link>
                                         <button
                                             onClick={() => setIsOpen(false)}
                                             className="mt-2 flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"

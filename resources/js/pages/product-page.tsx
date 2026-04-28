@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import ProductCard from '@/components/store/product-card';
 import CartModal from '@/components/store/cart-modal';
+import { useCart } from '@/contexts/cart-context';
 import { products, Product } from '@/data/mock-store';
 
 interface ProductPageProps {
@@ -13,25 +14,13 @@ export default function ProductPage({ id }: ProductPageProps) {
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
-
-    // Get props from page context as fallback
-    const page = usePage();
-    const productIdFromPage = page.props.id as string | undefined;
     
-    // Use either the prop directly or from page context
-    const finalId = id || productIdFromPage || '';
+    const { addToCart } = useCart();
 
     // Convert id from string to number for comparison
-    const productId = parseInt(finalId, 10);
-    
-    // Debug log
-    console.log('Product ID from URL:', finalId, 'Converted to number:', productId);
-    console.log('Page props:', page.props);
+    const productId = parseInt(id, 10);
     
     const product = products.find(p => p.id === productId);
-    
-    // Debug log
-    console.log('Found product:', product ? product.name : 'NOT FOUND');
 
     if (!product) {
         return (
@@ -56,13 +45,23 @@ export default function ProductPage({ id }: ProductPageProps) {
         : 0;
 
     const handleAddToCart = () => {
-        console.log('Adding to cart:', {
-            product,
-            quantity,
-            selectedSize,
-            selectedColor,
+        if (!product) return;
+        
+        const price = product.promotionalPrice || product.price;
+        
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            promotionalPrice: product.promotionalPrice,
+            image: product.image,
+            quantity: quantity,
+            size: selectedSize,
+            color: selectedColor,
         });
-        // TODO: Implement cart functionality
+        
+        // Show success message
+        alert('Produto adicionado ao carrinho com sucesso!');
     };
 
     const handleBuyNow = () => {
