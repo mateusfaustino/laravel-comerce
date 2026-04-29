@@ -2,7 +2,7 @@
 
 namespace App\Concerns;
 
-use App\Models\User;
+use App\Modules\Authentication\Infrastructure\Models\EloquentUserModel;
 use Illuminate\Validation\Rule;
 
 trait ProfileValidationRules
@@ -43,8 +43,8 @@ trait ProfileValidationRules
             'email',
             'max:255',
             $userId === null
-                ? Rule::unique(User::class)
-                : Rule::unique(User::class)->ignore($userId),
+                ? Rule::unique(EloquentUserModel::class)
+                : Rule::unique(EloquentUserModel::class)->ignore($userId),
         ];
     }
 }
