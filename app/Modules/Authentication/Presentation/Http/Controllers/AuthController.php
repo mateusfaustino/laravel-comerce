@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Modules\Authentication\Interfaces\Controllers;
+namespace App\Modules\Authentication\Presentation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Authentication\Application\DTOs\LoginDTO;
 use App\Modules\Authentication\Application\DTOs\RegisterDTO;
-use App\Modules\Authentication\Application\UseCases\LoginUseCase;
-use App\Modules\Authentication\Application\UseCases\RegisterUseCase;
-use App\Modules\Authentication\Interfaces\Requests\LoginRequest;
-use App\Modules\Authentication\Interfaces\Requests\RegisterRequest;
+use App\Modules\Authentication\Application\Services\LoginUseCase;
+use App\Modules\Authentication\Application\Services\RegisterUseCase;
+use App\Modules\Authentication\Presentation\Http\Requests\LoginRequest;
+use App\Modules\Authentication\Presentation\Http\Requests\RegisterRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

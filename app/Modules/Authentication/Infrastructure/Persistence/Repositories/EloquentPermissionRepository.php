@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Authentication\Infrastructure\Repositories;
+namespace App\Modules\Authentication\Infrastructure\Persistence\Repositories;
 
 use App\Modules\Authentication\Domain\Entities\Permission as DomainPermission;
 use App\Modules\Authentication\Domain\Repositories\PermissionRepositoryInterface;
-use App\Modules\Authentication\Infrastructure\Models\EloquentPermissionModel;
+use App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentPermissionModel;
 use Carbon\CarbonImmutable;
 
 class EloquentPermissionRepository implements PermissionRepositoryInterface

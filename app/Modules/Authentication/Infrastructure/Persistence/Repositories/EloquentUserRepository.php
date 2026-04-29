@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Authentication\Infrastructure\Repositories;
+namespace App\Modules\Authentication\Infrastructure\Persistence\Repositories;
 
 use App\Modules\Authentication\Domain\Entities\User as DomainUser;
 use App\Modules\Authentication\Domain\Repositories\UserRepositoryInterface;
-use App\Modules\Authentication\Infrastructure\Models\EloquentUserModel;
+use App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentUserModel;
 use Carbon\CarbonImmutable;
 
 class EloquentUserRepository implements UserRepositoryInterface

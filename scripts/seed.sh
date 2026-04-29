@@ -9,6 +9,6 @@ echo "🌱 Running global seeders..."
 php artisan db:seed
 
 echo "📦 Running Authentication module seeders..."
-php artisan db:seed --class="App\Modules\Authentication\Infrastructure\Seeders\AuthenticationSeeder"
+php artisan db:seed --class="App\Modules\Authentication\Infrastructure\Persistence\Seeders\AuthenticationSeeder"
 
 echo "✅ All seeders completed."

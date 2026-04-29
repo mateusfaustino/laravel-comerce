@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Authentication\Infrastructure\Models;
+namespace App\Modules\Authentication\Infrastructure\Persistence\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

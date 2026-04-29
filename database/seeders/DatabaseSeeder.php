@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Modules\Authentication\Infrastructure\Seeders\AuthenticationSeeder;
+use App\Modules\Authentication\Infrastructure\Persistence\Seeders\AuthenticationSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

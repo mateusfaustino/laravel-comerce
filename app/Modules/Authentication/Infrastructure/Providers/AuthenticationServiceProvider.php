@@ -6,9 +6,9 @@ use App\Modules\Authentication\Domain\Repositories\PermissionRepositoryInterface
 use App\Modules\Authentication\Domain\Repositories\RoleRepositoryInterface;
 use App\Modules\Authentication\Domain\Repositories\UserRepositoryInterface;
 use App\Modules\Authentication\Infrastructure\Commands\SyncRolesPermissionsCommand;
-use App\Modules\Authentication\Infrastructure\Repositories\EloquentPermissionRepository;
-use App\Modules\Authentication\Infrastructure\Repositories\EloquentRoleRepository;
-use App\Modules\Authentication\Infrastructure\Repositories\EloquentUserRepository;
+use App\Modules\Authentication\Infrastructure\Persistence\Repositories\EloquentPermissionRepository;
+use App\Modules\Authentication\Infrastructure\Persistence\Repositories\EloquentRoleRepository;
+use App\Modules\Authentication\Infrastructure\Persistence\Repositories\EloquentUserRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AuthenticationServiceProvider extends ServiceProvider

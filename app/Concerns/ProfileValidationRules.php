@@ -2,7 +2,7 @@
 
 namespace App\Concerns;
 
-use App\Modules\Authentication\Infrastructure\Models\EloquentUserModel;
+use App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentUserModel;
 use Illuminate\Validation\Rule;
 
 trait ProfileValidationRules

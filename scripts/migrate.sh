@@ -11,6 +11,6 @@ echo "🚀 Running global migrations..."
 php artisan migrate ${1:-} --path=database/migrations
 
 echo "📦 Running Authentication module migrations..."
-php artisan migrate ${1:-} --path=app/Modules/Authentication/Infrastructure/Migrations
+php artisan migrate ${1:-} --path=app/Modules/Authentication/Infrastructure/Persistence/Migrations
 
 echo "✅ All migrations completed."

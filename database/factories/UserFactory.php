@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Modules\Authentication\Infrastructure\Models\EloquentUserModel>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentUserModel>
  */
 class UserFactory extends Factory
 {

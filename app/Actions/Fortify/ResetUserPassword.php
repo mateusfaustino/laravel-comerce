@@ -2,7 +2,7 @@
 
 namespace App\Actions\Fortify;
 
-use App\Modules\Authentication\Infrastructure\Models\EloquentUserModel;
+use App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentUserModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;

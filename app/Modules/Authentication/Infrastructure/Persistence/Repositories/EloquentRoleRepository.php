@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Authentication\Infrastructure\Repositories;
+namespace App\Modules\Authentication\Infrastructure\Persistence\Repositories;
 
 use App\Modules\Authentication\Domain\Entities\Role as DomainRole;
 use App\Modules\Authentication\Domain\Repositories\RoleRepositoryInterface;
-use App\Modules\Authentication\Infrastructure\Models\EloquentRoleModel;
+use App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentRoleModel;
 use Carbon\CarbonImmutable;
 
 class EloquentRoleRepository implements RoleRepositoryInterface

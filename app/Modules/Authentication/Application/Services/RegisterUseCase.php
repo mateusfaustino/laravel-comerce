@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Authentication\Application\UseCases;
+namespace App\Modules\Authentication\Application\Services;
 
 use App\Modules\Authentication\Application\DTOs\RegisterDTO;
 use App\Modules\Authentication\Domain\Entities\User;

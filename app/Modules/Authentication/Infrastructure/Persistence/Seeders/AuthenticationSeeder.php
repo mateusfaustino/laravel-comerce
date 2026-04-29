@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\Authentication\Infrastructure\Seeders;
+namespace App\Modules\Authentication\Infrastructure\Persistence\Seeders;
 
 use App\Modules\Authentication\Domain\Entities\Permission;
 use App\Modules\Authentication\Domain\Entities\Role;
 use App\Modules\Authentication\Domain\Repositories\PermissionRepositoryInterface;
 use App\Modules\Authentication\Domain\Repositories\RoleRepositoryInterface;
-use App\Modules\Authentication\Infrastructure\Models\EloquentUserModel;
+use App\Modules\Authentication\Infrastructure\Persistence\Models\EloquentUserModel;
 use Illuminate\Database\Seeder;
 
 class AuthenticationSeeder extends Seeder
