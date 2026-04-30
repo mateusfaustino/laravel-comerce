@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Badge } from '@/components/ui/badge';
@@ -217,7 +217,7 @@ export default function CategoriesEdit({ category, rootCategories, subcategories
                                     <Link href="/admin/categories">Cancelar</Link>
                                 </Button>
                                 <Button type="submit" disabled={processing}>
-                                    Atualizar
+                                    Salvar
                                 </Button>
                             </div>
                         </form>
