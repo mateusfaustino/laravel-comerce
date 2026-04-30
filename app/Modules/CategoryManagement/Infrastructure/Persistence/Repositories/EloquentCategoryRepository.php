@@ -90,15 +90,6 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         $model->update(['active' => false]);
     }
 
-    public function findChildren(int $parentId): array
-    {
-        $models = EloquentCategoryModel::where('parent_id', $parentId)
-            ->orderBy('name')
-            ->get();
-
-        return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
-    }
-
     public function findRootCategories(?bool $active = null): array
     {
         $query = EloquentCategoryModel::whereNull('parent_id')
@@ -110,6 +101,55 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         }
 
         return $query->get()->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function findRootCategoriesPaginated(int $perPage, int $page, ?bool $active = null): array
+    {
+        $query = EloquentCategoryModel::whereNull('parent_id')
+            ->withCount('children')
+            ->orderBy('name');
+
+        if ($active !== null) {
+            $query->where('active', $active);
+        }
+
+        $models = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function countRootCategories(?bool $active = null): int
+    {
+        $query = EloquentCategoryModel::whereNull('parent_id');
+
+        if ($active !== null) {
+            $query->where('active', $active);
+        }
+
+        return $query->count();
+    }
+
+    public function findChildren(int $parentId): array
+    {
+        $models = EloquentCategoryModel::where('parent_id', $parentId)
+            ->orderBy('name')
+            ->get();
+
+        return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function findChildrenPaginated(int $parentId, int $perPage, int $page): array
+    {
+        $models = EloquentCategoryModel::where('parent_id', $parentId)
+            ->orderBy('name')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function countChildren(int $parentId): int
+    {
+        return EloquentCategoryModel::where('parent_id', $parentId)->count();
     }
 
     public function findHierarchy(): array
@@ -139,6 +179,10 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
 
         if ($model->updated_at !== null) {
             $category->setUpdatedAt(CarbonImmutable::parse($model->updated_at));
+        }
+
+        if (isset($model->children_count)) {
+            $category->setChildrenCount($model->children_count);
         }
 
         return $category;

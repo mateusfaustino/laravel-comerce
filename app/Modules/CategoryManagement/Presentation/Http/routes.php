@@ -15,6 +15,10 @@ Route::middleware(['auth', 'verified'])
             ->name('create')
             ->middleware('can:register_category');
 
+        Route::get('/{id}/subcategories', [CategoryController::class, 'subcategories'])
+            ->name('subcategories')
+            ->middleware('can:list_categories');
+
         Route::post('/', [CategoryController::class, 'store'])
             ->name('store')
             ->middleware('can:register_category');

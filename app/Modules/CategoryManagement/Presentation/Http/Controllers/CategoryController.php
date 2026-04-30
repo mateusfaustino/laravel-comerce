@@ -12,6 +12,7 @@ use App\Modules\CategoryManagement\Application\Services\UpdateCategoryService;
 use App\Modules\CategoryManagement\Domain\Repositories\CategoryRepositoryInterface;
 use App\Modules\CategoryManagement\Presentation\Http\Requests\CreateCategoryRequest;
 use App\Modules\CategoryManagement\Presentation\Http\Requests\UpdateCategoryRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,10 +33,25 @@ class CategoryController extends Controller
         $page = (int) $request->input('page', 1);
         $perPage = 10;
 
-        $result = $this->listCategoriesService->execute($perPage, $page);
+        $result = $this->listCategoriesService->executeRootOnly($perPage, $page, active: true);
 
         return Inertia::render('admin/categories/index', [
             'categories' => array_map([$this, 'toArray'], $result['categories']),
+            'total' => $result['total'],
+            'perPage' => $result['perPage'],
+            'currentPage' => $result['currentPage'],
+        ]);
+    }
+
+    public function subcategories(Request $request, int $id): JsonResponse
+    {
+        $page = (int) $request->input('page', 1);
+        $perPage = 5;
+
+        $result = $this->listCategoriesService->executeChildren($id, $perPage, $page);
+
+        return response()->json([
+            'subcategories' => array_map([$this, 'toArray'], $result['subcategories']),
             'total' => $result['total'],
             'perPage' => $result['perPage'],
             'currentPage' => $result['currentPage'],
@@ -125,7 +141,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * @param \App\Modules\CategoryManagement\Domain\Entities\Category $category
+     * @param  \App\Modules\CategoryManagement\Domain\Entities\Category  $category
      * @return array<string, mixed>
      */
     private function toArray($category): array
@@ -145,6 +161,7 @@ class CategoryController extends Controller
             'parentId' => $parentId,
             'parentName' => $parentName,
             'isSubcategory' => $category->isSubcategory(),
+            'childrenCount' => $category->getChildrenCount(),
             'active' => $category->isActive(),
             'createdAt' => $category->getCreatedAt()?->toDateTimeString(),
             'updatedAt' => $category->getUpdatedAt()?->toDateTimeString(),

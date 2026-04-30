@@ -12,6 +12,8 @@ class Category
 
     private ?CarbonImmutable $updatedAt = null;
 
+    private int $childrenCount = 0;
+
     public function __construct(
         private string $name,
         private string $slug,
@@ -92,5 +94,15 @@ class Category
     public function setUpdatedAt(CarbonImmutable $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    public function getChildrenCount(): int
+    {
+        return $this->childrenCount;
+    }
+
+    public function setChildrenCount(int $count): void
+    {
+        $this->childrenCount = $count;
     }
 }

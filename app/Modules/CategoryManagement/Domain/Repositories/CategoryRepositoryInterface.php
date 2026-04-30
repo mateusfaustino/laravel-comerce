@@ -31,12 +31,26 @@ interface CategoryRepositoryInterface
     /**
      * @return array<Category>
      */
+    public function findRootCategories(?bool $active = null): array;
+
+    /**
+     * @return array<Category>
+     */
+    public function findRootCategoriesPaginated(int $perPage, int $page, ?bool $active = null): array;
+
+    public function countRootCategories(?bool $active = null): int;
+
+    /**
+     * @return array<Category>
+     */
     public function findChildren(int $parentId): array;
 
     /**
      * @return array<Category>
      */
-    public function findRootCategories(?bool $active = null): array;
+    public function findChildrenPaginated(int $parentId, int $perPage, int $page): array;
+
+    public function countChildren(int $parentId): int;
 
     /**
      * @return array<Category>
