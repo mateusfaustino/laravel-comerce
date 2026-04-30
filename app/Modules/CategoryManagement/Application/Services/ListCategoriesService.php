@@ -45,10 +45,10 @@ class ListCategoriesService
     /**
      * @return array{subcategories: array, total: int, perPage: int, currentPage: int}
      */
-    public function executeChildren(int $parentId, int $perPage = 15, int $page = 1): array
+    public function executeChildren(int $parentId, int $perPage = 15, int $page = 1, ?bool $active = null): array
     {
-        $subcategories = $this->categoryRepository->findChildrenPaginated($parentId, $perPage, $page);
-        $total = $this->categoryRepository->countChildren($parentId);
+        $subcategories = $this->categoryRepository->findChildrenPaginated($parentId, $perPage, $page, $active);
+        $total = $this->categoryRepository->countChildren($parentId, $active);
 
         return [
             'subcategories' => $subcategories,

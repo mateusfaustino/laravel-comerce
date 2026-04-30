@@ -48,7 +48,7 @@ class CategoryController extends Controller
         $page = (int) $request->input('page', 1);
         $perPage = 5;
 
-        $result = $this->listCategoriesService->executeChildren($id, $perPage, $page);
+        $result = $this->listCategoriesService->executeChildren($id, $perPage, $page, active: true);
 
         return response()->json([
             'subcategories' => array_map([$this, 'toArray'], $result['subcategories']),

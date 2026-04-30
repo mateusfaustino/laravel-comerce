@@ -48,5 +48,5 @@ return [
         'name' => 'Infanto juvenil',
         'slug' => 'infanto-juvenil',
     ],
-    
+
 ];

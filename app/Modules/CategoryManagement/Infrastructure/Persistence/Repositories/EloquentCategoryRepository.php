@@ -106,11 +106,15 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
     public function findRootCategoriesPaginated(int $perPage, int $page, ?bool $active = null): array
     {
         $query = EloquentCategoryModel::whereNull('parent_id')
-            ->withCount('children')
             ->orderBy('name');
 
         if ($active !== null) {
             $query->where('active', $active);
+            $query->withCount(['children' => function ($q) use ($active) {
+                $q->where('active', $active);
+            }]);
+        } else {
+            $query->withCount('children');
         }
 
         $models = $query->paginate($perPage, ['*'], 'page', $page);
@@ -138,18 +142,29 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
     }
 
-    public function findChildrenPaginated(int $parentId, int $perPage, int $page): array
+    public function findChildrenPaginated(int $parentId, int $perPage, int $page, ?bool $active = null): array
     {
-        $models = EloquentCategoryModel::where('parent_id', $parentId)
-            ->orderBy('name')
-            ->paginate($perPage, ['*'], 'page', $page);
+        $query = EloquentCategoryModel::where('parent_id', $parentId)
+            ->orderBy('name');
+
+        if ($active !== null) {
+            $query->where('active', $active);
+        }
+
+        $models = $query->paginate($perPage, ['*'], 'page', $page);
 
         return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
     }
 
-    public function countChildren(int $parentId): int
+    public function countChildren(int $parentId, ?bool $active = null): int
     {
-        return EloquentCategoryModel::where('parent_id', $parentId)->count();
+        $query = EloquentCategoryModel::where('parent_id', $parentId);
+
+        if ($active !== null) {
+            $query->where('active', $active);
+        }
+
+        return $query->count();
     }
 
     public function findHierarchy(): array

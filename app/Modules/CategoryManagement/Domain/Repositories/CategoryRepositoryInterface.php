@@ -48,9 +48,9 @@ interface CategoryRepositoryInterface
     /**
      * @return array<Category>
      */
-    public function findChildrenPaginated(int $parentId, int $perPage, int $page): array;
+    public function findChildrenPaginated(int $parentId, int $perPage, int $page, ?bool $active = null): array;
 
-    public function countChildren(int $parentId): int;
+    public function countChildren(int $parentId, ?bool $active = null): int;
 
     /**
      * @return array<Category>
