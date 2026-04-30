@@ -1,0 +1,24 @@
+import { AppContent } from '@/components/app-content';
+import { AppShell } from '@/components/app-shell';
+import { AdminSidebar } from '@/components/admin-sidebar';
+import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { FlashMessages } from '@/components/flash-messages';
+import type { AppLayoutProps } from '@/types';
+
+export default function AdminLayout({
+    children,
+    breadcrumbs = [],
+}: AppLayoutProps) {
+    return (
+        <AppShell variant="sidebar">
+            <AdminSidebar />
+            <AppContent variant="sidebar" className="overflow-x-hidden">
+                <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                <div className="px-4 pt-4">
+                    <FlashMessages />
+                </div>
+                {children}
+            </AppContent>
+        </AppShell>
+    );
+}

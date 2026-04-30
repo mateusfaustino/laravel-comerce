@@ -9,6 +9,7 @@ use App\Modules\Authentication\Infrastructure\Commands\SyncRolesPermissionsComma
 use App\Modules\Authentication\Infrastructure\Persistence\Repositories\EloquentPermissionRepository;
 use App\Modules\Authentication\Infrastructure\Persistence\Repositories\EloquentRoleRepository;
 use App\Modules\Authentication\Infrastructure\Persistence\Repositories\EloquentUserRepository;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AuthenticationServiceProvider extends ServiceProvider
@@ -42,6 +43,26 @@ class AuthenticationServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesPermissionsCommand::class,
             ]);
+        }
+
+        $this->definePermissionGates();
+    }
+
+    private function definePermissionGates(): void
+    {
+        $rolesConfig = config('authentication.roles', []);
+        $permissions = [];
+
+        foreach ($rolesConfig as $roleData) {
+            foreach ($roleData['permissions'] as $permission) {
+                $permissions[$permission] = true;
+            }
+        }
+
+        foreach (array_keys($permissions) as $permission) {
+            Gate::define($permission, function ($user) use ($permission) {
+                return $user->hasPermission($permission);
+            });
         }
     }
 }

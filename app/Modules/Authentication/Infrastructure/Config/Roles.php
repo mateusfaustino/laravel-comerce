@@ -6,6 +6,12 @@ return [
         'name' => 'Administrador',
         'permissions' => [
             'access_admin_panel',
+            'create_category',
+            'list_categories',
+            'register_category',
+            'edit_category',
+            'order_category',
+            'delete_category',
         ],
     ],
 

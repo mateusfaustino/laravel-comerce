@@ -1,27 +1,26 @@
-import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
+import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { home } from '@/routes';
+import AdminLayout from '@/layouts/admin-layout';
 
 export default function AdminDashboard() {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <AdminLayout breadcrumbs={[{ title: 'Dashboard', href: '/admin/dashboard' }]}>
             <Head title="Painel Administrativo" />
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-center text-2xl">
-                        Painel Administrativo
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col items-center gap-6">
-                    <p className="text-center text-lg text-muted-foreground">
-                        Voce esta logado
-                    </p>
-                    <Button asChild variant="outline">
-                        <Link href={home()}>Voltar para a loja</Link>
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
+            <div className="flex flex-col gap-4 p-4">
+                <h1 className="text-2xl font-bold">Painel Administrativo</h1>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Bem-vindo</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">
+                                Voce esta logado no painel administrativo.
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </AdminLayout>
     );
 }
