@@ -8,6 +8,7 @@ use App\Modules\CategoryManagement\Application\DTOs\UpdateCategoryDTO;
 use App\Modules\CategoryManagement\Application\Services\CreateCategoryService;
 use App\Modules\CategoryManagement\Application\Services\DeleteCategoryService;
 use App\Modules\CategoryManagement\Application\Services\ListCategoriesService;
+use App\Modules\CategoryManagement\Application\Services\PermanentlyDeleteCategoryService;
 use App\Modules\CategoryManagement\Application\Services\UpdateCategoryService;
 use App\Modules\CategoryManagement\Domain\Repositories\CategoryRepositoryInterface;
 use App\Modules\CategoryManagement\Presentation\Http\Requests\CreateCategoryRequest;
@@ -26,6 +27,7 @@ class CategoryController extends Controller
         private CreateCategoryService $createCategoryService,
         private UpdateCategoryService $updateCategoryService,
         private DeleteCategoryService $deleteCategoryService,
+        private PermanentlyDeleteCategoryService $permanentlyDeleteCategoryService,
     ) {}
 
     public function index(Request $request): Response
@@ -33,13 +35,15 @@ class CategoryController extends Controller
         $page = (int) $request->input('page', 1);
         $perPage = 10;
 
-        $result = $this->listCategoriesService->executeRootOnly($perPage, $page, active: true);
+        $activeResult = $this->listCategoriesService->executeRootOnly($perPage, $page, active: true);
+        $inactiveCategories = $this->categoryRepository->findRootCategories(active: false);
 
         return Inertia::render('admin/categories/index', [
-            'categories' => array_map([$this, 'toArray'], $result['categories']),
-            'total' => $result['total'],
-            'perPage' => $result['perPage'],
-            'currentPage' => $result['currentPage'],
+            'categories' => array_map([$this, 'toArray'], $activeResult['categories']),
+            'total' => $activeResult['total'],
+            'perPage' => $activeResult['perPage'],
+            'currentPage' => $activeResult['currentPage'],
+            'inactiveCategories' => array_map([$this, 'toArray'], $inactiveCategories),
         ]);
     }
 
@@ -138,6 +142,14 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Categoria desativada com sucesso.');
+    }
+
+    public function forceDestroy(int $id): RedirectResponse
+    {
+        $this->permanentlyDeleteCategoryService->execute($id);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Categoria e sub-categorias excluidas permanentemente.');
     }
 
     /**

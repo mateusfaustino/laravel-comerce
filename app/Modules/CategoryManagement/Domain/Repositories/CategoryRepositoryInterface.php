@@ -52,6 +52,8 @@ interface CategoryRepositoryInterface
 
     public function countChildren(int $parentId, ?bool $active = null): int;
 
+    public function permanentlyDelete(int $id): void;
+
     /**
      * @return array<Category>
      */

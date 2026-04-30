@@ -50,11 +50,14 @@ interface Props {
     total: number;
     perPage: number;
     currentPage: number;
+    inactiveCategories: Category[];
 }
 
-export default function CategoriesIndex({ categories, total, perPage, currentPage }: Props) {
+export default function CategoriesIndex({ categories, total, perPage, currentPage, inactiveCategories }: Props) {
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [forceDeleteId, setForceDeleteId] = useState<number | null>(null);
+    const [forceDeleting, setForceDeleting] = useState(false);
     const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
     const [subcategoryPages, setSubcategoryPages] = useState<Record<number, SubcategoryPage | null>>({});
     const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
@@ -108,6 +111,19 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
             },
             onError: () => {
                 setDeleting(false);
+            },
+        });
+    };
+
+    const handleForceDelete = (id: number) => {
+        setForceDeleting(true);
+        router.delete(`/admin/categories/${id}/force`, {
+            onSuccess: () => {
+                setForceDeleteId(null);
+                setForceDeleting(false);
+            },
+            onError: () => {
+                setForceDeleting(false);
             },
         });
     };
@@ -331,6 +347,60 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                     </div>
                 )}
 
+                {inactiveCategories.length > 0 && (
+                    <div className="flex flex-col gap-3">
+                        <h2 className="text-lg font-semibold text-muted-foreground">Categorias desativadas</h2>
+                        {inactiveCategories.map((category) => (
+                            <div
+                                key={category.id}
+                                className="rounded-md border border-dashed bg-muted/30 text-card-foreground"
+                            >
+                                <div className="flex items-center justify-between gap-3 p-4">
+                                    <div className="flex min-w-0 items-center gap-3">
+                                        <div className="h-7 w-7 shrink-0" />
+                                        <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+                                            <span className="truncate font-medium text-muted-foreground">{category.name}</span>
+                                            <Badge className="border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400">
+                                                Inativa
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                    <div className="flex shrink-0 gap-1">
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                                                    <Link href={`/admin/categories/${category.id}`}>
+                                                        <Eye className="h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>Ver detalhes</TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                                                    <Link href={`/admin/categories/${category.id}/edit`}>
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>Editar</TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setForceDeleteId(category.id)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>Excluir permanentemente</TooltipContent>
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 <Dialog open={deleteId !== null} onOpenChange={() => { setDeleteId(null); setDeleting(false); }}>
                     <DialogContent>
                         <DialogHeader>
@@ -351,6 +421,32 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                                     </>
                                 ) : (
                                     'Desativar'
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={forceDeleteId !== null} onOpenChange={() => { setForceDeleteId(null); setForceDeleting(false); }}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Confirmar exclusao permanente</DialogTitle>
+                            <DialogDescription>
+                                Tem certeza que deseja excluir esta categoria permanentemente? Esta acao nao pode ser desfeita e todas as sub-categorias serao removidas.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setForceDeleteId(null)}>
+                                Cancelar
+                            </Button>
+                            <Button variant="destructive" disabled={forceDeleting} onClick={() => forceDeleteId && handleForceDelete(forceDeleteId)}>
+                                {forceDeleting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Excluindo...
+                                    </>
+                                ) : (
+                                    'Excluir permanentemente'
                                 )}
                             </Button>
                         </DialogFooter>

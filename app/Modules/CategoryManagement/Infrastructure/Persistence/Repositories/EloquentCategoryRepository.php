@@ -167,6 +167,17 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         return $query->count();
     }
 
+    public function permanentlyDelete(int $id): void
+    {
+        $model = EloquentCategoryModel::findOrFail($id);
+
+        // Delete all subcategories first
+        EloquentCategoryModel::where('parent_id', $model->id)->delete();
+
+        // Delete the category itself
+        $model->delete();
+    }
+
     public function findHierarchy(): array
     {
         $models = EloquentCategoryModel::whereNull('parent_id')

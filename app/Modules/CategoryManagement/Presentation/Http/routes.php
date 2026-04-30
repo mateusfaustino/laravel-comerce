@@ -38,4 +38,8 @@ Route::middleware(['auth', 'verified'])
         Route::delete('/{id}', [CategoryController::class, 'destroy'])
             ->name('destroy')
             ->middleware('can:delete_category');
+
+        Route::delete('/{id}/force', [CategoryController::class, 'forceDestroy'])
+            ->name('force-destroy')
+            ->middleware('can:delete_category');
     });

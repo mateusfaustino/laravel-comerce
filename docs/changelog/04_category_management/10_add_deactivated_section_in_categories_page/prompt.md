@@ -17,7 +17,7 @@ Ao clicar nesse botão o usuário será informado da exclusão permanente. Ao co
 <instructions>
   1. Aplique a seção de categorias desativadas. 
   
-  2. Documente a implementação no arquivo docs\changelog\04_category_management\09_sync_categories_list\implementação.md. No mesmo arquivo dê sugestões de mensagem para o commit usando boas práticas de Git.
+  2. Documente a implementação no arquivo docs\changelog\04_category_management\10_sync_categories_list\implementação.md. No mesmo arquivo dê sugestões de mensagem para o commit usando boas práticas de Git.
   
 </instructions>
 
