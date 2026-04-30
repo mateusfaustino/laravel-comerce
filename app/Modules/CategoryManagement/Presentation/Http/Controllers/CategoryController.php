@@ -5,6 +5,7 @@ namespace App\Modules\CategoryManagement\Presentation\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\CategoryManagement\Application\DTOs\CreateCategoryDTO;
 use App\Modules\CategoryManagement\Application\DTOs\UpdateCategoryDTO;
+use App\Modules\CategoryManagement\Application\Services\ActivateCategoryService;
 use App\Modules\CategoryManagement\Application\Services\CreateCategoryService;
 use App\Modules\CategoryManagement\Application\Services\DeleteCategoryService;
 use App\Modules\CategoryManagement\Application\Services\ListCategoriesService;
@@ -28,6 +29,7 @@ class CategoryController extends Controller
         private UpdateCategoryService $updateCategoryService,
         private DeleteCategoryService $deleteCategoryService,
         private PermanentlyDeleteCategoryService $permanentlyDeleteCategoryService,
+        private ActivateCategoryService $activateCategoryService,
     ) {}
 
     public function index(Request $request): Response
@@ -150,6 +152,14 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Categoria e sub-categorias excluidas permanentemente.');
+    }
+
+    public function activate(int $id): RedirectResponse
+    {
+        $this->activateCategoryService->execute($id);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Categoria reativada com sucesso.');
     }
 
     /**

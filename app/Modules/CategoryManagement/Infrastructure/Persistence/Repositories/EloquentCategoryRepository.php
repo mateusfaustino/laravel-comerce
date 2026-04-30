@@ -90,6 +90,12 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         $model->update(['active' => false]);
     }
 
+    public function activate(int $id): void
+    {
+        $model = EloquentCategoryModel::findOrFail($id);
+        $model->update(['active' => true]);
+    }
+
     public function findRootCategories(?bool $active = null): array
     {
         $query = EloquentCategoryModel::whereNull('parent_id')

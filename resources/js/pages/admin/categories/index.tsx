@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronDown, ChevronLeft, ChevronRight, Eye, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Eye, Loader2, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +58,8 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
     const [deleting, setDeleting] = useState(false);
     const [forceDeleteId, setForceDeleteId] = useState<number | null>(null);
     const [forceDeleting, setForceDeleting] = useState(false);
+    const [reactivateId, setReactivateId] = useState<number | null>(null);
+    const [reactivating, setReactivating] = useState(false);
     const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
     const [subcategoryPages, setSubcategoryPages] = useState<Record<number, SubcategoryPage | null>>({});
     const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
@@ -124,6 +126,19 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
             },
             onError: () => {
                 setForceDeleting(false);
+            },
+        });
+    };
+
+    const handleReactivate = (id: number) => {
+        setReactivating(true);
+        router.put(`/admin/categories/${id}/activate`, {}, {
+            onSuccess: () => {
+                setReactivateId(null);
+                setReactivating(false);
+            },
+            onError: () => {
+                setReactivating(false);
             },
         });
     };
@@ -368,6 +383,14 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                                     <div className="flex shrink-0 gap-1">
                                         <Tooltip>
                                             <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setReactivateId(category.id)}>
+                                                    <RotateCcw className="h-4 w-4 text-green-600" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>Reativar</TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
                                                 <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                                                     <Link href={`/admin/categories/${category.id}`}>
                                                         <Eye className="h-4 w-4" />
@@ -447,6 +470,32 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                                     </>
                                 ) : (
                                     'Excluir permanentemente'
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={reactivateId !== null} onOpenChange={() => { setReactivateId(null); setReactivating(false); }}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Confirmar reativacao</DialogTitle>
+                            <DialogDescription>
+                                Tem certeza que deseja reativar esta categoria? Ela voltara a aparecer no site.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setReactivateId(null)}>
+                                Cancelar
+                            </Button>
+                            <Button variant="default" disabled={reactivating} onClick={() => reactivateId && handleReactivate(reactivateId)}>
+                                {reactivating ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Reativando...
+                                    </>
+                                ) : (
+                                    'Reativar'
                                 )}
                             </Button>
                         </DialogFooter>

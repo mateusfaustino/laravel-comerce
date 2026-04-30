@@ -28,6 +28,8 @@ interface CategoryRepositoryInterface
 
     public function deactivate(int $id): void;
 
+    public function activate(int $id): void;
+
     /**
      * @return array<Category>
      */
