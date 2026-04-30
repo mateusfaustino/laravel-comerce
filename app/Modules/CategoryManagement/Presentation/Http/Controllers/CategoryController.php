@@ -116,7 +116,7 @@ class CategoryController extends Controller
         $this->deleteCategoryService->execute($id);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Categoria removida com sucesso.');
+            ->with('success', 'Categoria desativada com sucesso.');
     }
 
     /**
@@ -125,11 +125,20 @@ class CategoryController extends Controller
      */
     private function toArray($category): array
     {
+        $parentId = $category->getParentId();
+        $parentName = null;
+
+        if ($parentId !== null) {
+            $parent = $this->categoryRepository->findById($parentId);
+            $parentName = $parent?->getName();
+        }
+
         return [
             'id' => $category->getId(),
             'name' => $category->getName(),
             'slug' => $category->getSlug(),
-            'parentId' => $category->getParentId(),
+            'parentId' => $parentId,
+            'parentName' => $parentName,
             'active' => $category->isActive(),
             'createdAt' => $category->getCreatedAt()?->toDateTimeString(),
             'updatedAt' => $category->getUpdatedAt()?->toDateTimeString(),

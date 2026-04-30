@@ -12,6 +12,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Category {
     id: number;
@@ -88,25 +89,40 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                                     <td className="px-4 py-3">{category.name}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{category.slug}</td>
                                     <td className="px-4 py-3">
-                                        <Badge variant={category.active ? 'default' : 'secondary'}>
+                                        <Badge className={category.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
                                             {category.active ? 'Ativa' : 'Inativa'}
                                         </Badge>
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" asChild>
-                                                <Link href={`/admin/categories/${category.id}`}>
-                                                    <Eye className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                            <Button variant="ghost" size="icon" asChild>
-                                                <Link href={`/admin/categories/${category.id}/edit`}>
-                                                    <Pencil className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => setDeleteId(category.id)}>
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button variant="ghost" size="icon" asChild>
+                                                        <Link href={`/admin/categories/${category.id}`}>
+                                                            <Eye className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>Ver detalhes</TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button variant="ghost" size="icon" asChild>
+                                                        <Link href={`/admin/categories/${category.id}/edit`}>
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>Editar</TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button variant="ghost" size="icon" onClick={() => setDeleteId(category.id)}>
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>Desativar</TooltipContent>
+                                            </Tooltip>
                                         </div>
                                     </td>
                                 </tr>
@@ -144,9 +160,9 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                 <Dialog open={deleteId !== null} onOpenChange={() => { setDeleteId(null); setDeleting(false); }}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Confirmar exclusao</DialogTitle>
+                            <DialogTitle>Confirmar desativação</DialogTitle>
                             <DialogDescription>
-                                Tem certeza que deseja remover esta categoria? Ela sera marcada como inativa.
+                                Tem certeza que deseja desativar esta categoria? Ela deixará de aparecer no site.
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
@@ -157,10 +173,10 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                                 {deleting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Removendo...
+                                        Desativando...
                                     </>
                                 ) : (
-                                    'Remover'
+                                    'Desativar'
                                 )}
                             </Button>
                         </DialogFooter>

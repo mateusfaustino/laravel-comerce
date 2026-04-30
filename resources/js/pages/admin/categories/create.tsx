@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
+import { useCallback } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 
 interface ParentCategory {
     id: number;
@@ -30,6 +31,20 @@ export default function CategoriesCreate({ parentCategories }: Props) {
         parent_id: '' as string,
         active: true,
     });
+
+    const slugify = useCallback((text: string): string => {
+        return text
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }, []);
+
+    const handleNameChange = useCallback((value: string) => {
+        setData('name', value);
+        setData('slug', slugify(value));
+    }, [setData, slugify]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,20 +84,21 @@ export default function CategoriesCreate({ parentCategories }: Props) {
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    placeholder="Ex: Eletronicos"
+                                    onChange={(e) => handleNameChange(e.target.value)}
+                                    placeholder="Ex: Eletrônicos"
                                 />
                                 {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="slug">Slug *</Label>
+                                <Label htmlFor="slug">Identificador da URL</Label>
                                 <Input
                                     id="slug"
                                     value={data.slug}
                                     onChange={(e) => setData('slug', e.target.value)}
-                                    placeholder="Ex: eletronicos"
+                                    placeholder="Gerado automaticamente a partir do nome"
                                 />
+                                <p className="text-xs text-muted-foreground">Texto que aparecerá na URL da categoria. Preenchido automaticamente pelo nome.</p>
                                 {errors.slug && <p className="text-sm text-destructive">{errors.slug}</p>}
                             </div>
 
@@ -106,15 +122,16 @@ export default function CategoriesCreate({ parentCategories }: Props) {
                                 {errors.parent_id && <p className="text-sm text-destructive">{errors.parent_id}</p>}
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <Checkbox
+                            <div className="flex items-center justify-between rounded-lg border p-3">
+                                <div className="space-y-0.5">
+                                    <Label htmlFor="active">Categoria ativa</Label>
+                                    <p className="text-xs text-muted-foreground">Categorias inativas não aparecem no site.</p>
+                                </div>
+                                <Switch
                                     id="active"
                                     checked={data.active}
-                                    onCheckedChange={(checked) => setData('active', checked === true)}
+                                    onCheckedChange={(checked) => setData('active', checked)}
                                 />
-                                <Label htmlFor="active" className="font-normal">
-                                    Categoria ativa
-                                </Label>
                             </div>
 
                             <div className="flex justify-end gap-2">

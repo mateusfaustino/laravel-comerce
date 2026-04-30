@@ -10,6 +10,7 @@ interface Category {
     name: string;
     slug: string;
     parentId: number | null;
+    parentName: string | null;
     active: boolean;
     createdAt: string;
     updatedAt: string;
@@ -61,14 +62,14 @@ export default function CategoriesShow({ category }: Props) {
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Status</p>
-                                <Badge variant={category.active ? 'default' : 'secondary'}>
+                                <Badge className={category.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
                                     {category.active ? 'Ativa' : 'Inativa'}
                                 </Badge>
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Categoria Pai</p>
                                 <p className="font-medium">
-                                    {category.parentId ? `ID: ${category.parentId}` : 'Nenhuma'}
+                                    {category.parentName ?? 'Nenhuma'}
                                 </p>
                             </div>
                             <div>
