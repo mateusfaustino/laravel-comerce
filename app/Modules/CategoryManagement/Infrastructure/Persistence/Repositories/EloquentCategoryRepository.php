@@ -90,6 +90,28 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         $model->update(['active' => false]);
     }
 
+    public function findChildren(int $parentId): array
+    {
+        $models = EloquentCategoryModel::where('parent_id', $parentId)
+            ->orderBy('name')
+            ->get();
+
+        return $models->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function findRootCategories(?bool $active = null): array
+    {
+        $query = EloquentCategoryModel::whereNull('parent_id')
+            ->with('children')
+            ->orderBy('name');
+
+        if ($active !== null) {
+            $query->where('active', $active);
+        }
+
+        return $query->get()->map(fn (EloquentCategoryModel $m) => $this->toDomainEntity($m))->all();
+    }
+
     public function findHierarchy(): array
     {
         $models = EloquentCategoryModel::whereNull('parent_id')

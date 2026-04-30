@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,16 +15,18 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
-interface ParentCategory {
+interface RootCategory {
     id: number;
     name: string;
 }
 
 interface Props {
-    parentCategories: ParentCategory[];
+    rootCategories: RootCategory[];
 }
 
-export default function CategoriesCreate({ parentCategories }: Props) {
+export default function CategoriesCreate({ rootCategories }: Props) {
+    const [categoryType, setCategoryType] = useState<'category' | 'subcategory'>('category');
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         slug: '',
@@ -46,14 +48,19 @@ export default function CategoriesCreate({ parentCategories }: Props) {
         setData('slug', slugify(value));
     }, [setData, slugify]);
 
+    const handleTypeChange = (type: 'category' | 'subcategory') => {
+        setCategoryType(type);
+        if (type === 'category') {
+            setData('parent_id', '');
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/categories', {
-            data: {
-                ...data,
-                parent_id: data.parent_id || null,
-            },
-        });
+        if (categoryType === 'category') {
+            setData('parent_id', '');
+        }
+        post('/admin/categories');
     };
 
     return (
@@ -103,24 +110,53 @@ export default function CategoriesCreate({ parentCategories }: Props) {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="parent_id">Categoria Pai</Label>
-                                <Select
-                                    value={data.parent_id}
-                                    onValueChange={(value) => setData('parent_id', value)}
-                                >
-                                    <SelectTrigger id="parent_id">
-                                        <SelectValue placeholder="Selecione uma categoria pai (opcional)" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {parentCategories.map((cat) => (
-                                            <SelectItem key={cat.id} value={String(cat.id)}>
-                                                {cat.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.parent_id && <p className="text-sm text-destructive">{errors.parent_id}</p>}
+                                <Label>Tipo *</Label>
+                                <div className="flex gap-2">
+                                    <Button
+                                        type="button"
+                                        variant={categoryType === 'category' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => handleTypeChange('category')}
+                                    >
+                                        Categoria
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant={categoryType === 'subcategory' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => handleTypeChange('subcategory')}
+                                    >
+                                        Sub-categoria
+                                    </Button>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {categoryType === 'category'
+                                        ? 'Categorias aparecem no menu principal do site.'
+                                        : 'Sub-categorias ficam dentro de uma categoria pai.'}
+                                </p>
                             </div>
+
+                            {categoryType === 'subcategory' && (
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="parent_id">Categoria Pai *</Label>
+                                    <Select
+                                        value={data.parent_id}
+                                        onValueChange={(value) => setData('parent_id', value)}
+                                    >
+                                        <SelectTrigger id="parent_id">
+                                            <SelectValue placeholder="Selecione uma categoria pai" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {rootCategories.map((cat) => (
+                                                <SelectItem key={cat.id} value={String(cat.id)}>
+                                                    {cat.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.parent_id && <p className="text-sm text-destructive">{errors.parent_id}</p>}
+                                </div>
+                            )}
 
                             <div className="flex items-center justify-between rounded-lg border p-3">
                                 <div className="space-y-0.5">

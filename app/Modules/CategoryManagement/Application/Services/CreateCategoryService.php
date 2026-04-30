@@ -45,6 +45,12 @@ class CreateCategoryService
                     'parent_id' => ['A categoria pai não existe.'],
                 ]);
             }
+
+            if ($parent->isSubcategory()) {
+                throw ValidationException::withMessages([
+                    'parent_id' => ['A categoria pai selecionada não é uma categoria de nível superior.'],
+                ]);
+            }
         }
     }
 }

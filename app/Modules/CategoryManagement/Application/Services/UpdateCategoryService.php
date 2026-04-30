@@ -43,6 +43,17 @@ class UpdateCategoryService
             ]);
         }
 
+        // Changing from category to sub-category: must not have children
+        if ($dto->parentId !== null && ! $current->isSubcategory()) {
+            $children = $this->categoryRepository->findChildren($dto->id);
+
+            if (count($children) > 0) {
+                throw ValidationException::withMessages([
+                    'parent_id' => ['Esta categoria possui sub-categorias e não pode ser convertida em sub-categoria.'],
+                ]);
+            }
+        }
+
         if ($dto->parentId !== null) {
             if ($dto->parentId === $dto->id) {
                 throw ValidationException::withMessages([
@@ -55,6 +66,12 @@ class UpdateCategoryService
             if ($parent === null) {
                 throw ValidationException::withMessages([
                     'parent_id' => ['A categoria pai não existe.'],
+                ]);
+            }
+
+            if ($parent->isSubcategory()) {
+                throw ValidationException::withMessages([
+                    'parent_id' => ['A categoria pai selecionada não é uma categoria de nível superior.'],
                 ]);
             }
         }

@@ -1,7 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
-import { useCallback } from 'react';
+import { ArrowLeft, Plus } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,20 +21,32 @@ interface Category {
     name: string;
     slug: string;
     parentId: number | null;
+    isSubcategory: boolean;
     active: boolean;
 }
 
-interface ParentCategory {
+interface RootCategory {
     id: number;
     name: string;
 }
 
-interface Props {
-    category: Category;
-    parentCategories: ParentCategory[];
+interface Subcategory {
+    id: number;
+    name: string;
+    active: boolean;
 }
 
-export default function CategoriesEdit({ category, parentCategories }: Props) {
+interface Props {
+    category: Category;
+    rootCategories: RootCategory[];
+    subcategories: Subcategory[];
+}
+
+export default function CategoriesEdit({ category, rootCategories, subcategories }: Props) {
+    const [categoryType, setCategoryType] = useState<'category' | 'subcategory'>(
+        category.isSubcategory ? 'subcategory' : 'category'
+    );
+
     const { data, setData, put, processing, errors } = useForm({
         name: category.name,
         slug: category.slug,
@@ -55,14 +68,19 @@ export default function CategoriesEdit({ category, parentCategories }: Props) {
         setData('slug', slugify(value));
     }, [setData, slugify]);
 
+    const handleTypeChange = (type: 'category' | 'subcategory') => {
+        setCategoryType(type);
+        if (type === 'category') {
+            setData('parent_id', '');
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/categories/${category.id}`, {
-            data: {
-                ...data,
-                parent_id: data.parent_id || null,
-            },
-        });
+        if (categoryType === 'category') {
+            setData('parent_id', '');
+        }
+        put(`/admin/categories/${category.id}`);
     };
 
     return (
@@ -111,26 +129,76 @@ export default function CategoriesEdit({ category, parentCategories }: Props) {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="parent_id">Categoria Pai</Label>
-                                <Select
-                                    value={data.parent_id}
-                                    onValueChange={(value) => setData('parent_id', value)}
-                                >
-                                    <SelectTrigger id="parent_id">
-                                        <SelectValue placeholder="Selecione uma categoria pai (opcional)" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {parentCategories
-                                            .filter((cat) => cat.id !== category.id)
-                                            .map((cat) => (
-                                                <SelectItem key={cat.id} value={String(cat.id)}>
-                                                    {cat.name}
-                                                </SelectItem>
-                                            ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.parent_id && <p className="text-sm text-destructive">{errors.parent_id}</p>}
+                                <Label>Tipo *</Label>
+                                <div className="flex gap-2">
+                                    <Button
+                                        type="button"
+                                        variant={categoryType === 'category' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => handleTypeChange('category')}
+                                    >
+                                        Categoria
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant={categoryType === 'subcategory' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => handleTypeChange('subcategory')}
+                                    >
+                                        Sub-categoria
+                                    </Button>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {categoryType === 'category'
+                                        ? 'Categorias aparecem no menu principal do site.'
+                                        : 'Sub-categorias ficam dentro de uma categoria pai.'}
+                                </p>
                             </div>
+
+                            {categoryType === 'subcategory' && (
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="parent_id">Categoria Pai *</Label>
+                                    <Select
+                                        value={data.parent_id}
+                                        onValueChange={(value) => setData('parent_id', value)}
+                                    >
+                                        <SelectTrigger id="parent_id">
+                                            <SelectValue placeholder="Selecione uma categoria pai" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {rootCategories
+                                                .filter((cat) => cat.id !== category.id)
+                                                .map((cat) => (
+                                                    <SelectItem key={cat.id} value={String(cat.id)}>
+                                                        {cat.name}
+                                                    </SelectItem>
+                                                ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.parent_id && <p className="text-sm text-destructive">{errors.parent_id}</p>}
+                                </div>
+                            )}
+
+                            {categoryType === 'category' && subcategories.length > 0 && (
+                                <div className="flex flex-col gap-2">
+                                    <Label>Sub-categorias</Label>
+                                    <div className="flex flex-col gap-1 rounded-md border p-3">
+                                        {subcategories.map((sub) => (
+                                            <div key={sub.id} className="flex items-center justify-between py-1">
+                                                <Link
+                                                    href={`/admin/categories/${sub.id}`}
+                                                    className="text-sm text-primary hover:underline"
+                                                >
+                                                    {sub.name}
+                                                </Link>
+                                                <Badge className={sub.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
+                                                    {sub.active ? 'Ativa' : 'Inativa'}
+                                                </Badge>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="flex items-center justify-between rounded-lg border p-3">
                                 <div className="space-y-0.5">

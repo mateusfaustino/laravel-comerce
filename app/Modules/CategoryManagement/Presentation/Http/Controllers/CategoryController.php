@@ -44,10 +44,10 @@ class CategoryController extends Controller
 
     public function create(): Response
     {
-        $categories = $this->categoryRepository->findAll(active: true);
+        $rootCategories = $this->categoryRepository->findRootCategories(active: true);
 
         return Inertia::render('admin/categories/create', [
-            'parentCategories' => array_map([$this, 'toArray'], $categories),
+            'rootCategories' => array_map([$this, 'toArray'], $rootCategories),
         ]);
     }
 
@@ -74,8 +74,11 @@ class CategoryController extends Controller
             abort(404);
         }
 
+        $children = $category->isSubcategory() ? [] : $this->categoryRepository->findChildren($id);
+
         return Inertia::render('admin/categories/show', [
             'category' => $this->toArray($category),
+            'subcategories' => array_map([$this, 'toArray'], $children),
         ]);
     }
 
@@ -87,11 +90,13 @@ class CategoryController extends Controller
             abort(404);
         }
 
-        $categories = $this->categoryRepository->findAll(active: true);
+        $rootCategories = $this->categoryRepository->findRootCategories(active: true);
+        $children = $category->isSubcategory() ? [] : $this->categoryRepository->findChildren($id);
 
         return Inertia::render('admin/categories/edit', [
             'category' => $this->toArray($category),
-            'parentCategories' => array_map([$this, 'toArray'], $categories),
+            'rootCategories' => array_map([$this, 'toArray'], $rootCategories),
+            'subcategories' => array_map([$this, 'toArray'], $children),
         ]);
     }
 
@@ -139,6 +144,7 @@ class CategoryController extends Controller
             'slug' => $category->getSlug(),
             'parentId' => $parentId,
             'parentName' => $parentName,
+            'isSubcategory' => $category->isSubcategory(),
             'active' => $category->isActive(),
             'createdAt' => $category->getCreatedAt()?->toDateTimeString(),
             'updatedAt' => $category->getUpdatedAt()?->toDateTimeString(),

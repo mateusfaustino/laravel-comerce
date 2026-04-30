@@ -31,5 +31,15 @@ interface CategoryRepositoryInterface
     /**
      * @return array<Category>
      */
+    public function findChildren(int $parentId): array;
+
+    /**
+     * @return array<Category>
+     */
+    public function findRootCategories(?bool $active = null): array;
+
+    /**
+     * @return array<Category>
+     */
     public function findHierarchy(): array;
 }

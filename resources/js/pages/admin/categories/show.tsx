@@ -11,16 +11,24 @@ interface Category {
     slug: string;
     parentId: number | null;
     parentName: string | null;
+    isSubcategory: boolean;
     active: boolean;
     createdAt: string;
     updatedAt: string;
 }
 
-interface Props {
-    category: Category;
+interface Subcategory {
+    id: number;
+    name: string;
+    active: boolean;
 }
 
-export default function CategoriesShow({ category }: Props) {
+interface Props {
+    category: Category;
+    subcategories: Subcategory[];
+}
+
+export default function CategoriesShow({ category, subcategories }: Props) {
     return (
         <AdminLayout breadcrumbs={[
             { title: 'Dashboard', href: '/admin/dashboard' },
@@ -57,8 +65,14 @@ export default function CategoriesShow({ category }: Props) {
                                 <p className="font-medium">{category.name}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">Slug</p>
+                                <p className="text-sm text-muted-foreground">Identificador da URL</p>
                                 <p className="font-medium">{category.slug}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Tipo</p>
+                                <Badge variant={category.isSubcategory ? 'secondary' : 'default'}>
+                                    {category.isSubcategory ? 'Sub-categoria' : 'Categoria'}
+                                </Badge>
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">Status</p>
@@ -66,12 +80,12 @@ export default function CategoriesShow({ category }: Props) {
                                     {category.active ? 'Ativa' : 'Inativa'}
                                 </Badge>
                             </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Categoria Pai</p>
-                                <p className="font-medium">
-                                    {category.parentName ?? 'Nenhuma'}
-                                </p>
-                            </div>
+                            {category.isSubcategory && category.parentName && (
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Categoria Pai</p>
+                                    <p className="font-medium">{category.parentName}</p>
+                                </div>
+                            )}
                             <div>
                                 <p className="text-sm text-muted-foreground">Criado em</p>
                                 <p className="font-medium">
@@ -85,6 +99,27 @@ export default function CategoriesShow({ category }: Props) {
                                 </p>
                             </div>
                         </div>
+
+                        {!category.isSubcategory && subcategories.length > 0 && (
+                            <div className="mt-4 flex flex-col gap-2">
+                                <h3 className="font-medium">Sub-categorias</h3>
+                                <div className="flex flex-col gap-1 rounded-md border p-3">
+                                    {subcategories.map((sub) => (
+                                        <div key={sub.id} className="flex items-center justify-between py-1">
+                                            <Link
+                                                href={`/admin/categories/${sub.id}`}
+                                                className="text-sm text-primary hover:underline"
+                                            >
+                                                {sub.name}
+                                            </Link>
+                                            <Badge className={sub.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
+                                                {sub.active ? 'Ativa' : 'Inativa'}
+                                            </Badge>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </div>

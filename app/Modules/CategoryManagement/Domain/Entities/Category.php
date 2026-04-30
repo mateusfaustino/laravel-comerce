@@ -59,6 +59,11 @@ class Category
         $this->parentId = $parentId;
     }
 
+    public function isSubcategory(): bool
+    {
+        return $this->parentId !== null;
+    }
+
     public function isActive(): bool
     {
         return $this->active;

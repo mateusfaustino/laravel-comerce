@@ -19,6 +19,7 @@ interface Category {
     name: string;
     slug: string;
     parentId: number | null;
+    isSubcategory: boolean;
     active: boolean;
     createdAt: string;
     updatedAt: string;
@@ -71,7 +72,7 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                         <thead className="bg-muted">
                             <tr>
                                 <th className="px-4 py-3 text-left font-medium">Nome</th>
-                                <th className="px-4 py-3 text-left font-medium">Slug</th>
+                                <th className="px-4 py-3 text-left font-medium">Tipo</th>
                                 <th className="px-4 py-3 text-left font-medium">Status</th>
                                 <th className="px-4 py-3 text-right font-medium">Acoes</th>
                             </tr>
@@ -86,8 +87,12 @@ export default function CategoriesIndex({ categories, total, perPage, currentPag
                             )}
                             {categories.map((category) => (
                                 <tr key={category.id} className="border-t">
-                                    <td className="px-4 py-3">{category.name}</td>
-                                    <td className="px-4 py-3 text-muted-foreground">{category.slug}</td>
+                                    <td className="px-4 py-3 font-medium">{category.name}</td>
+                                    <td className="px-4 py-3">
+                                        <Badge variant={category.isSubcategory ? 'secondary' : 'default'}>
+                                            {category.isSubcategory ? 'Sub-categoria' : 'Categoria'}
+                                        </Badge>
+                                    </td>
                                     <td className="px-4 py-3">
                                         <Badge className={category.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
                                             {category.active ? 'Ativa' : 'Inativa'}
