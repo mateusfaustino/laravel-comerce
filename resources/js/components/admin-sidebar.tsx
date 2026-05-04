@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronRight, Home, LayoutGrid, List, PlusCircle, Tag } from 'lucide-react';
+import { ChevronRight, Home, LayoutGrid, List, Palette, PlusCircle, Tag, Image } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import {
     Collapsible,
@@ -26,6 +26,9 @@ export function AdminSidebar() {
     const { url } = usePage();
 
     const isCategoriesOpen = url.startsWith('/admin/categories');
+    const isProductsOpen = url.startsWith('/admin/products');
+    const isCoresOpen = url.startsWith('/admin/cores');
+    const isFotosOpen = url.startsWith('/admin/fotos');
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -89,6 +92,129 @@ export function AdminSidebar() {
                                             <Link href="/admin/categories/create" prefetch>
                                                 <PlusCircle />
                                                 <span>Adicionar Categoria</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                </SidebarMenuSub>
+                            </CollapsibleContent>
+                        </SidebarMenuItem>
+                    </Collapsible>
+
+                    <Collapsible defaultOpen={isProductsOpen} className="group/collapsible">
+                        <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                                <SidebarMenuButton
+                                    tooltip={{ children: 'Produtos' }}
+                                    isActive={isCurrentOrParentUrl('/admin/products')}
+                                >
+                                    <LayoutGrid />
+                                    <span>Produtos</span>
+                                    <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                                </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenuSub>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/products')}
+                                        >
+                                            <Link href="/admin/products" prefetch>
+                                                <List />
+                                                <span>Listar Produtos</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/products/create')}
+                                        >
+                                            <Link href="/admin/products/create" prefetch>
+                                                <PlusCircle />
+                                                <span>Adicionar Produto</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                </SidebarMenuSub>
+                            </CollapsibleContent>
+                        </SidebarMenuItem>
+                    </Collapsible>
+
+                    <Collapsible defaultOpen={isCoresOpen} className="group/collapsible">
+                        <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                                <SidebarMenuButton
+                                    tooltip={{ children: 'Cores' }}
+                                    isActive={isCurrentOrParentUrl('/admin/cores')}
+                                >
+                                    <Palette />
+                                    <span>Cores</span>
+                                    <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                                </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenuSub>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/cores')}
+                                        >
+                                            <Link href="/admin/cores" prefetch>
+                                                <List />
+                                                <span>Listar Cores</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/cores/create')}
+                                        >
+                                            <Link href="/admin/cores/create" prefetch>
+                                                <PlusCircle />
+                                                <span>Adicionar Cor</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                </SidebarMenuSub>
+                            </CollapsibleContent>
+                        </SidebarMenuItem>
+                    </Collapsible>
+
+                    <Collapsible defaultOpen={isFotosOpen} className="group/collapsible">
+                        <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                                <SidebarMenuButton
+                                    tooltip={{ children: 'Fotos' }}
+                                    isActive={isCurrentOrParentUrl('/admin/fotos')}
+                                >
+                                    <Image />
+                                    <span>Fotos</span>
+                                    <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                                </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenuSub>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/fotos')}
+                                        >
+                                            <Link href="/admin/fotos" prefetch>
+                                                <List />
+                                                <span>Listar Fotos</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/fotos/create')}
+                                        >
+                                            <Link href="/admin/fotos/create" prefetch>
+                                                <PlusCircle />
+                                                <span>Adicionar Foto</span>
                                             </Link>
                                         </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>

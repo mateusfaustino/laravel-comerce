@@ -19,6 +19,10 @@ echo "📦 Running CategoryManagement module migrations..."
 echo "📦 Rodando migrations do módulo CategoryManagement..."
 php artisan migrate ${1:-} --path=app/Modules/CategoryManagement/Infrastructure/Persistence/Migrations
 
+echo "📦 Running ProductManagement module migrations..."
+echo "📦 Rodando migrations do módulo ProductManagement..."
+php artisan migrate ${1:-} --path=app/Modules/ProductManagement/Infrastructure/Persistence/Migrations
+
 echo "✅ All migrations completed."
 echo "✅ Todas as migrations foram concluídas."
 

@@ -12,6 +12,11 @@ return [
             'edit_category',
             'order_category',
             'delete_category',
+            'list_products',
+            'register_product',
+            'edit_product',
+            'delete_product',
+            'manage_color',
         ],
     ],
 

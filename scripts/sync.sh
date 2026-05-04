@@ -21,3 +21,12 @@ php artisan category:sync-defaults
 
 echo "✅ Default categories synchronized successfully."
 echo "✅ Categorias padrões sincronizadas com sucesso."
+
+echo ""
+echo "🔄 Synchronizing default colors..."
+echo "🔄 Sincronizando cores padrões..."
+
+php artisan product:sync-default-colors
+
+echo "✅ Default colors synchronized successfully."
+echo "✅ Cores padrões sincronizadas com sucesso."
