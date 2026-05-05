@@ -166,6 +166,8 @@ class ProductController extends Controller
         }
 
         $fotos = $this->fotoRepository->findByProductId($id);
+        $variations = $this->variationRepository->findByProductId($id);
+        $cores = $this->corRepository->findAll();
         $selectedCategoryIds = $this->productRepository->getCategoryIds($id);
 
         return Inertia::render('admin/products/edit', [
@@ -173,6 +175,8 @@ class ProductController extends Controller
             'categories' => array_map(fn ($c) => ['id' => $c->getId(), 'name' => $c->getName()], $categories),
             'subcategories' => $subcategories,
             'fotos' => array_map([$this, 'fotoToArray'], $fotos),
+            'variations' => array_map([$this, 'variationToArray'], $variations),
+            'cores' => array_map(fn ($c) => ['id' => $c->getId(), 'nome' => $c->getNome(), 'codRgb' => $c->getCodRgb()], $cores),
             'selectedCategoryIds' => $selectedCategoryIds,
         ]);
     }

@@ -68,11 +68,37 @@ interface Foto {
     ordem: number;
 }
 
+interface Variation {
+    id: number;
+    produtoId: number;
+    corId: number | null;
+    corNome: string | null;
+    corCodRgb: string | null;
+    tamanhoRoupaAdulto: string | null;
+    tamanhoRoupaCrianca: string | null;
+    tamanhoCalcado: string | null;
+    active: boolean;
+    quantidadeEstoque: number;
+    sku: string | null;
+    precoVenda: string | null;
+    precoPromocional: string | null;
+    custo: string | null;
+    fotoIds: number[];
+}
+
+interface Cor {
+    id: number;
+    nome: string;
+    codRgb: string;
+}
+
 interface Props {
     product: Product;
     categories: Category[];
     subcategories: Subcategory[];
     fotos: Foto[];
+    variations: Variation[];
+    cores: Cor[];
     selectedCategoryIds: number[];
 }
 
@@ -80,7 +106,7 @@ const tamanhoRoupaAdultoOptions = ['PP', 'P', 'M', 'G', 'GG', 'XG'];
 const tamanhoRoupaCriancaOptions = ['2', '4', '6', '8', '10', '12', '14'];
 const tamanhoCalcadoOptions = ['32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 
-export default function ProductsEdit({ product, categories, subcategories, fotos, selectedCategoryIds }: Props) {
+export default function ProductsEdit({ product, categories, subcategories, fotos, variations, cores, selectedCategoryIds }: Props) {
     const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
     const [showVariationDialog, setShowVariationDialog] = useState(false);
     const [deleteVariationId, setDeleteVariationId] = useState<number | null>(null);
@@ -614,19 +640,75 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
                 {/* Variations Section */}
                 <Card className="max-w-3xl">
                     <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>Variacoes</CardTitle>
+                        <CardTitle>Variacoes ({variations.length})</CardTitle>
                         <Button type="button" onClick={() => setShowVariationDialog(true)}>
                             <Plus className="mr-2 h-4 w-4" />
                             Nova Variacao
                         </Button>
                     </CardHeader>
                     <CardContent>
-                        {product.variacoesCount === 0 && (
+                        {variations.length === 0 && (
                             <p className="text-sm text-muted-foreground">Nenhuma variacao cadastrada.</p>
                         )}
-                        <p className="text-sm text-muted-foreground">
-                            {product.variacoesCount} variacao{product.variacoesCount !== 1 ? 'es' : ''} cadastrada{product.variacoesCount !== 1 ? 's' : ''}
-                        </p>
+                        {variations.length > 0 && (
+                            <div className="flex flex-col gap-3">
+                                {variations.map((variation) => {
+                                    const size = variation.tamanhoRoupaAdulto || variation.tamanhoRoupaCrianca || variation.tamanhoCalcado || null;
+                                    const cor = variation.corId ? cores.find((c) => c.id === variation.corId) : null;
+                                    return (
+                                        <div key={variation.id} className="flex flex-col gap-2 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {cor && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span
+                                                            className="inline-block h-4 w-4 rounded-full border"
+                                                            style={{ backgroundColor: cor.codRgb }}
+                                                        />
+                                                        <span className="text-sm font-medium">{cor.nome}</span>
+                                                    </div>
+                                                )}
+                                                {variation.corNome && !cor && (
+                                                    <span className="text-sm font-medium">{variation.corNome}</span>
+                                                )}
+                                                {size && (
+                                                    <Badge variant="outline">{size}</Badge>
+                                                )}
+                                                <Badge className={variation.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
+                                                    {variation.active ? 'Ativo' : 'Inativo'}
+                                                </Badge>
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                                                    {variation.precoVenda && (
+                                                        <span>R$ {Number(variation.precoVenda).toFixed(2)}</span>
+                                                    )}
+                                                    {variation.quantidadeEstoque > 0 && (
+                                                        <span>Estoque: {variation.quantidadeEstoque}</span>
+                                                    )}
+                                                    {variation.sku && (
+                                                        <span>SKU: {variation.sku}</span>
+                                                    )}
+                                                </div>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-7 w-7 text-muted-foreground hover:text-red-500"
+                                                            onClick={() => setDeleteVariationId(variation.id)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>Excluir variacao</TooltipContent>
+                                                </Tooltip>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -643,11 +725,27 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
                     <form onSubmit={handleVariationSubmit} className="flex flex-col gap-4">
                         <div className="flex flex-col gap-2">
                             <Label>Cor</Label>
-                            <Input
-                                placeholder="ID da cor (será substituído por select quando módulo de cores estiver integrado)"
+                            <Select
                                 value={variationData.cor_id}
-                                onChange={(e) => setVariationData('cor_id', e.target.value)}
-                            />
+                                onValueChange={(value) => setVariationData('cor_id', value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione a cor" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {cores.map((cor) => (
+                                        <SelectItem key={cor.id} value={String(cor.id)}>
+                                            <div className="flex items-center gap-2">
+                                                <span
+                                                    className="inline-block h-3 w-3 rounded-full border"
+                                                    style={{ backgroundColor: cor.codRgb }}
+                                                />
+                                                {cor.nome}
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             {variationErrors.cor_id && <p className="text-sm text-destructive">{variationErrors.cor_id}</p>}
                         </div>
 
