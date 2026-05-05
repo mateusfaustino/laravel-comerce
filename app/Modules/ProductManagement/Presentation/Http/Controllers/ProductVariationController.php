@@ -33,6 +33,9 @@ class ProductVariationController extends Controller
             tamanhoRoupaCrianca: $request->validated('tamanho_roupa_crianca'),
             tamanhoCalcado: $request->validated('tamanho_calcado'),
             sku: $request->validated('sku'),
+            precoVenda: $request->validated('preco_venda'),
+            precoPromocional: $request->validated('preco_promocional'),
+            custo: $request->validated('custo'),
             fotoIds: $request->validated('foto_ids'),
         );
 
@@ -54,6 +57,9 @@ class ProductVariationController extends Controller
             tamanhoRoupaCrianca: $request->validated('tamanho_roupa_crianca'),
             tamanhoCalcado: $request->validated('tamanho_calcado'),
             sku: $request->validated('sku'),
+            precoVenda: $request->validated('preco_venda'),
+            precoPromocional: $request->validated('preco_promocional'),
+            custo: $request->validated('custo'),
             fotoIds: $request->validated('foto_ids'),
         );
 

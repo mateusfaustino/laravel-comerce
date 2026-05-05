@@ -31,6 +31,9 @@ class UpdateProductVariationService
         $existing->setTamanhoRoupaCrianca($dto->tamanhoRoupaCrianca);
         $existing->setTamanhoCalcado($dto->tamanhoCalcado);
         $existing->setSku($dto->sku);
+        $existing->setPrecoVenda($dto->precoVenda);
+        $existing->setPrecoPromocional($dto->precoPromocional);
+        $existing->setCusto($dto->custo);
 
         $variation = $this->variationRepository->update($existing);
 

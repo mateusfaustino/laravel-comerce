@@ -25,4 +25,3 @@ php artisan migrate ${1:-} --path=app/Modules/ProductManagement/Infrastructure/P
 
 echo "✅ All migrations completed."
 echo "✅ Todas as migrations foram concluídas."
-

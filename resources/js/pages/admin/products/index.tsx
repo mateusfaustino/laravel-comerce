@@ -21,9 +21,6 @@ interface Product {
     tipoProduto: string;
     estoqueTipo: string;
     descricao: string | null;
-    precoVenda: number;
-    precoPromocional: number | null;
-    custo: number | null;
     sku: string | null;
     codigoBarras: string | null;
     peso: number | null;
@@ -51,6 +48,9 @@ interface Variation {
     active: boolean;
     quantidadeEstoque: number;
     sku: string | null;
+    precoVenda: string | null;
+    precoPromocional: string | null;
+    custo: string | null;
     fotoIds: number[];
 }
 
@@ -243,9 +243,6 @@ export default function ProductsIndex({ products, total, perPage, currentPage, i
                                                 <Badge variant="outline" className="text-xs">
                                                     {tipoProdutoLabels[product.tipoProduto] || product.tipoProduto}
                                                 </Badge>
-                                                <Badge variant="outline" className="text-xs">
-                                                    {formatCurrency(product.precoVenda)}
-                                                </Badge>
                                                 {product.variacoesCount > 0 && (
                                                     <Badge variant="outline" className="text-xs">
                                                         {product.variacoesCount} variacao{product.variacoesCount !== 1 ? 'es' : ''}
@@ -326,6 +323,11 @@ export default function ProductsIndex({ products, total, perPage, currentPage, i
                                                                 <Badge variant="outline" className="text-xs">
                                                                     Estoque: {variation.quantidadeEstoque}
                                                                 </Badge>
+                                                                {variation.precoVenda && (
+                                                                    <Badge variant="outline" className="text-xs">
+                                                                        {formatCurrency(Number(variation.precoVenda))}
+                                                                    </Badge>
+                                                                )}
                                                                 {variation.sku && (
                                                                     <Badge variant="outline" className="text-xs">
                                                                         SKU: {variation.sku}

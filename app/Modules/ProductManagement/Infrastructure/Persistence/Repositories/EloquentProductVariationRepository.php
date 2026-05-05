@@ -27,6 +27,9 @@ class EloquentProductVariationRepository implements ProductVariationRepositoryIn
             'active' => $variation->isActive(),
             'quantidade_estoque' => $variation->getQuantidadeEstoque(),
             'sku' => $variation->getSku(),
+            'preco_venda' => $variation->getPrecoVenda(),
+            'preco_promocional' => $variation->getPrecoPromocional(),
+            'custo' => $variation->getCusto(),
         ]);
 
         return $this->toDomainEntity($model->load('cor'));
@@ -45,6 +48,9 @@ class EloquentProductVariationRepository implements ProductVariationRepositoryIn
             'active' => $variation->isActive(),
             'quantidade_estoque' => $variation->getQuantidadeEstoque(),
             'sku' => $variation->getSku(),
+            'preco_venda' => $variation->getPrecoVenda(),
+            'preco_promocional' => $variation->getPrecoPromocional(),
+            'custo' => $variation->getCusto(),
         ]);
 
         return $this->toDomainEntity($model->fresh()->load('cor'));
@@ -128,6 +134,9 @@ class EloquentProductVariationRepository implements ProductVariationRepositoryIn
             tamanhoRoupaCrianca: $model->tamanho_roupa_crianca,
             tamanhoCalcado: $model->tamanho_calcado,
             sku: $model->sku,
+            precoVenda: $model->preco_venda,
+            precoPromocional: $model->preco_promocional,
+            custo: $model->custo,
         );
 
         $variation->setId($model->id);

@@ -12,9 +12,6 @@ interface Product {
     tipoProduto: string;
     estoqueTipo: string;
     descricao: string | null;
-    precoVenda: number;
-    precoPromocional: number | null;
-    custo: number | null;
     sku: string | null;
     codigoBarras: string | null;
     peso: number | null;
@@ -55,11 +52,6 @@ const estoqueTipoLabels: Record<string, string> = {
 };
 
 export default function ProductsShow({ product, fotos }: Props) {
-    const formatCurrency = (value: number | null) => {
-        if (value === null) return '-';
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-    };
-
     const categoryNames = Object.values(product.categoryNames || {});
 
     return (
@@ -126,29 +118,6 @@ export default function ProductsShow({ product, fotos }: Props) {
                                     <p className="font-medium">{product.descricao}</p>
                                 </div>
                             )}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Pricing */}
-                <Card className="max-w-3xl">
-                    <CardHeader>
-                        <CardTitle>Precos</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-3 gap-4">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Preco de Venda</p>
-                                <p className="font-medium">{formatCurrency(product.precoVenda)}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Preco Promocional</p>
-                                <p className="font-medium">{formatCurrency(product.precoPromocional)}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Custo</p>
-                                <p className="font-medium">{formatCurrency(product.custo)}</p>
-                            </div>
                         </div>
                     </CardContent>
                 </Card>

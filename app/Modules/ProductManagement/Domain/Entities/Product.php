@@ -28,9 +28,6 @@ class Product
         private string $tipoProduto,
         private string $estoqueTipo = 'LIMITADO',
         private ?string $descricao = null,
-        private ?string $precoVenda = null,
-        private ?string $precoPromocional = null,
-        private ?string $custo = null,
         private ?string $sku = null,
         private ?string $codigoBarras = null,
         private ?string $peso = null,
@@ -98,36 +95,6 @@ class Product
     public function setDescricao(?string $descricao): void
     {
         $this->descricao = $descricao;
-    }
-
-    public function getPrecoVenda(): ?string
-    {
-        return $this->precoVenda;
-    }
-
-    public function setPrecoVenda(?string $precoVenda): void
-    {
-        $this->precoVenda = $precoVenda;
-    }
-
-    public function getPrecoPromocional(): ?string
-    {
-        return $this->precoPromocional;
-    }
-
-    public function setPrecoPromocional(?string $precoPromocional): void
-    {
-        $this->precoPromocional = $precoPromocional;
-    }
-
-    public function getCusto(): ?string
-    {
-        return $this->custo;
-    }
-
-    public function setCusto(?string $custo): void
-    {
-        $this->custo = $custo;
     }
 
     public function getSku(): ?string

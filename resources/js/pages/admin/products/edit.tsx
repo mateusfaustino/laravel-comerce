@@ -33,9 +33,6 @@ interface Product {
     tipoProduto: string;
     estoqueTipo: string;
     descricao: string | null;
-    precoVenda: number;
-    precoPromocional: number | null;
-    custo: number | null;
     sku: string | null;
     codigoBarras: string | null;
     peso: number | null;
@@ -97,9 +94,6 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
         tipo_produto: product.tipoProduto,
         estoque_tipo: product.estoqueTipo,
         descricao: product.descricao || '',
-        preco_venda: String(product.precoVenda),
-        preco_promocional: product.precoPromocional !== null ? String(product.precoPromocional) : '',
-        custo: product.custo !== null ? String(product.custo) : '',
         sku: product.sku || '',
         codigo_barras: product.codigoBarras || '',
         peso: product.peso !== null ? String(product.peso) : '',
@@ -118,6 +112,9 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
         tamanho_calcado: '' as string,
         quantidade_estoque: '0' as string,
         sku: '' as string,
+        preco_venda: '' as string,
+        preco_promocional: '' as string,
+        custo: '' as string,
         active: true,
     });
 
@@ -359,53 +356,6 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
                                     onChange={(e) => setData('descricao', e.target.value)}
                                 />
                                 {errors.descricao && <p className="text-sm text-destructive">{errors.descricao}</p>}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Pricing */}
-                    <Card className="max-w-3xl">
-                        <CardHeader>
-                            <CardTitle>Precos</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex flex-col gap-4">
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="preco_venda">Preco de Venda *</Label>
-                                    <Input
-                                        id="preco_venda"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={data.preco_venda}
-                                        onChange={(e) => setData('preco_venda', e.target.value)}
-                                    />
-                                    {errors.preco_venda && <p className="text-sm text-destructive">{errors.preco_venda}</p>}
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="preco_promocional">Preco Promocional</Label>
-                                    <Input
-                                        id="preco_promocional"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={data.preco_promocional}
-                                        onChange={(e) => setData('preco_promocional', e.target.value)}
-                                    />
-                                    {errors.preco_promocional && <p className="text-sm text-destructive">{errors.preco_promocional}</p>}
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="custo">Custo</Label>
-                                    <Input
-                                        id="custo"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={data.custo}
-                                        onChange={(e) => setData('custo', e.target.value)}
-                                    />
-                                    {errors.custo && <p className="text-sm text-destructive">{errors.custo}</p>}
-                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -743,6 +693,48 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
                                     onChange={(e) => setVariationData('sku', e.target.value)}
                                 />
                                 {variationErrors.sku && <p className="text-sm text-destructive">{variationErrors.sku}</p>}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="var-preco-venda">Preco de Venda *</Label>
+                                <Input
+                                    id="var-preco-venda"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={variationData.preco_venda}
+                                    onChange={(e) => setVariationData('preco_venda', e.target.value)}
+                                    placeholder="0.00"
+                                />
+                                {variationErrors.preco_venda && <p className="text-sm text-destructive">{variationErrors.preco_venda}</p>}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="var-preco-promocional">Preco Promocional</Label>
+                                <Input
+                                    id="var-preco-promocional"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={variationData.preco_promocional}
+                                    onChange={(e) => setVariationData('preco_promocional', e.target.value)}
+                                    placeholder="0.00"
+                                />
+                                {variationErrors.preco_promocional && <p className="text-sm text-destructive">{variationErrors.preco_promocional}</p>}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="var-custo">Custo</Label>
+                                <Input
+                                    id="var-custo"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={variationData.custo}
+                                    onChange={(e) => setVariationData('custo', e.target.value)}
+                                    placeholder="0.00"
+                                />
+                                {variationErrors.custo && <p className="text-sm text-destructive">{variationErrors.custo}</p>}
                             </div>
                         </div>
 

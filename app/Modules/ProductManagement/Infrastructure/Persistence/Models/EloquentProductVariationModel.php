@@ -19,10 +19,16 @@ class EloquentProductVariationModel extends Model
         'active',
         'quantidade_estoque',
         'sku',
+        'preco_venda',
+        'preco_promocional',
+        'custo',
     ];
 
     protected $casts = [
         'active' => 'boolean',
+        'preco_venda' => 'decimal:2',
+        'preco_promocional' => 'decimal:2',
+        'custo' => 'decimal:2',
     ];
 
     public function produto(): BelongsTo

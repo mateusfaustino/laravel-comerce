@@ -36,6 +36,9 @@ class CreateProductVariationService
             tamanhoRoupaCrianca: $dto->tamanhoRoupaCrianca,
             tamanhoCalcado: $dto->tamanhoCalcado,
             sku: $dto->sku,
+            precoVenda: $dto->precoVenda,
+            precoPromocional: $dto->precoPromocional,
+            custo: $dto->custo,
         );
 
         $variation = $this->variationRepository->save($variation);

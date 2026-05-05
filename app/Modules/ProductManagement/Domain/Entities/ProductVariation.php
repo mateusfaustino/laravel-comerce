@@ -28,6 +28,9 @@ class ProductVariation
         private ?string $tamanhoRoupaCrianca = null,
         private ?string $tamanhoCalcado = null,
         private ?string $sku = null,
+        private ?string $precoVenda = null,
+        private ?string $precoPromocional = null,
+        private ?string $custo = null,
     ) {}
 
     public function getId(): ?int
@@ -118,6 +121,36 @@ class ProductVariation
     public function setSku(?string $sku): void
     {
         $this->sku = $sku;
+    }
+
+    public function getPrecoVenda(): ?string
+    {
+        return $this->precoVenda;
+    }
+
+    public function setPrecoVenda(?string $precoVenda): void
+    {
+        $this->precoVenda = $precoVenda;
+    }
+
+    public function getPrecoPromocional(): ?string
+    {
+        return $this->precoPromocional;
+    }
+
+    public function setPrecoPromocional(?string $precoPromocional): void
+    {
+        $this->precoPromocional = $precoPromocional;
+    }
+
+    public function getCusto(): ?string
+    {
+        return $this->custo;
+    }
+
+    public function setCusto(?string $custo): void
+    {
+        $this->custo = $custo;
     }
 
     public function getCorNome(): ?string

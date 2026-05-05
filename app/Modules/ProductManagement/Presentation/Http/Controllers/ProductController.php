@@ -4,14 +4,17 @@ namespace App\Modules\ProductManagement\Presentation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\CategoryManagement\Domain\Repositories\CategoryRepositoryInterface;
+use App\Modules\ProductManagement\Application\DTOs\CreateFotoDTO;
 use App\Modules\ProductManagement\Application\DTOs\CreateProductDTO;
 use App\Modules\ProductManagement\Application\DTOs\UpdateProductDTO;
 use App\Modules\ProductManagement\Application\Services\ActivateProductService;
+use App\Modules\ProductManagement\Application\Services\CreateFotoService;
 use App\Modules\ProductManagement\Application\Services\CreateProductService;
 use App\Modules\ProductManagement\Application\Services\DeleteProductService;
 use App\Modules\ProductManagement\Application\Services\ListProductsService;
 use App\Modules\ProductManagement\Application\Services\ListProductVariationsService;
 use App\Modules\ProductManagement\Application\Services\UpdateProductService;
+use App\Modules\ProductManagement\Domain\Repositories\CorRepositoryInterface;
 use App\Modules\ProductManagement\Domain\Repositories\FotoRepositoryInterface;
 use App\Modules\ProductManagement\Domain\Repositories\ProductRepositoryInterface;
 use App\Modules\ProductManagement\Presentation\Http\Requests\CreateProductRequest;
@@ -27,7 +30,9 @@ class ProductController extends Controller
     public function __construct(
         private ProductRepositoryInterface $productRepository,
         private CategoryRepositoryInterface $categoryRepository,
+        private CorRepositoryInterface $corRepository,
         private FotoRepositoryInterface $fotoRepository,
+        private CreateFotoService $createFotoService,
         private ListProductsService $listProductsService,
         private ListProductVariationsService $listProductVariationsService,
         private CreateProductService $createProductService,
@@ -84,9 +89,12 @@ class ProductController extends Controller
             }
         }
 
+        $cores = $this->corRepository->findAll();
+
         return Inertia::render('admin/products/create', [
             'categories' => array_map(fn ($c) => ['id' => $c->getId(), 'name' => $c->getName()], $categories),
             'subcategories' => $subcategories,
+            'cores' => array_map(fn ($c) => ['id' => $c->getId(), 'nome' => $c->getNome(), 'codRgb' => $c->getCodRgb()], $cores),
         ]);
     }
 
@@ -98,9 +106,6 @@ class ProductController extends Controller
             tipoProduto: $request->validated('tipo_produto'),
             estoqueTipo: $request->validated('estoque_tipo'),
             descricao: $request->validated('descricao'),
-            precoVenda: $request->validated('preco_venda'),
-            precoPromocional: $request->validated('preco_promocional'),
-            custo: $request->validated('custo'),
             sku: $request->validated('sku'),
             codigoBarras: $request->validated('codigo_barras'),
             peso: $request->validated('peso'),
@@ -109,6 +114,7 @@ class ProductController extends Controller
             comprimento: $request->validated('comprimento'),
             active: $request->boolean('active', true),
             categoryIds: $request->validated('category_ids'),
+            variations: $request->validated('variations'),
         );
 
         $this->createProductService->execute($dto);
@@ -176,9 +182,6 @@ class ProductController extends Controller
             tipoProduto: $request->validated('tipo_produto'),
             estoqueTipo: $request->validated('estoque_tipo'),
             descricao: $request->validated('descricao'),
-            precoVenda: $request->validated('preco_venda'),
-            precoPromocional: $request->validated('preco_promocional'),
-            custo: $request->validated('custo'),
             sku: $request->validated('sku'),
             codigoBarras: $request->validated('codigo_barras'),
             peso: $request->validated('peso'),
@@ -229,9 +232,6 @@ class ProductController extends Controller
             'tipoProduto' => $product->getTipoProduto(),
             'estoqueTipo' => $product->getEstoqueTipo(),
             'descricao' => $product->getDescricao(),
-            'precoVenda' => $product->getPrecoVenda(),
-            'precoPromocional' => $product->getPrecoPromocional(),
-            'custo' => $product->getCusto(),
             'sku' => $product->getSku(),
             'codigoBarras' => $product->getCodigoBarras(),
             'peso' => $product->getPeso(),
@@ -262,6 +262,9 @@ class ProductController extends Controller
             'active' => $variation->isActive(),
             'quantidadeEstoque' => $variation->getQuantidadeEstoque(),
             'sku' => $variation->getSku(),
+            'precoVenda' => $variation->getPrecoVenda(),
+            'precoPromocional' => $variation->getPrecoPromocional(),
+            'custo' => $variation->getCusto(),
             'fotoIds' => $variation->getFotoIds(),
         ];
     }

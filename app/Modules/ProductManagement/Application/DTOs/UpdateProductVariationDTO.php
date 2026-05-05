@@ -17,6 +17,9 @@ class UpdateProductVariationDTO
         public ?string $tamanhoRoupaCrianca = null,
         public ?string $tamanhoCalcado = null,
         public ?string $sku = null,
+        public ?string $precoVenda = null,
+        public ?string $precoPromocional = null,
+        public ?string $custo = null,
         public ?array $fotoIds = null,
     ) {}
 }

@@ -16,9 +16,6 @@ class EloquentProductModel extends Model
         'nome',
         'slug',
         'descricao',
-        'preco_venda',
-        'preco_promocional',
-        'custo',
         'estoque_tipo',
         'sku',
         'codigo_barras',
@@ -33,9 +30,6 @@ class EloquentProductModel extends Model
 
     protected $casts = [
         'active' => 'boolean',
-        'preco_venda' => 'decimal:2',
-        'preco_promocional' => 'decimal:2',
-        'custo' => 'decimal:2',
         'peso' => 'decimal:2',
         'largura' => 'decimal:2',
         'altura' => 'decimal:2',

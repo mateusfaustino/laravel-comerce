@@ -35,9 +35,6 @@ class UpdateProductService
         $existing->setTipoProduto($dto->tipoProduto);
         $existing->setEstoqueTipo($dto->estoqueTipo);
         $existing->setDescricao($dto->descricao);
-        $existing->setPrecoVenda($dto->precoVenda);
-        $existing->setPrecoPromocional($dto->precoPromocional);
-        $existing->setCusto($dto->custo);
         $existing->setSku($dto->sku);
         $existing->setCodigoBarras($dto->codigoBarras);
         $existing->setPeso($dto->peso);
