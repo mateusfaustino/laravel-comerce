@@ -35,9 +35,28 @@ interface Foto {
     ordem: number;
 }
 
+interface Variation {
+    id: number;
+    produtoId: number;
+    corId: number | null;
+    corNome: string | null;
+    corCodRgb: string | null;
+    tamanhoRoupaAdulto: string | null;
+    tamanhoRoupaCrianca: string | null;
+    tamanhoCalcado: string | null;
+    active: boolean;
+    quantidadeEstoque: number;
+    sku: string | null;
+    precoVenda: string | null;
+    precoPromocional: string | null;
+    custo: string | null;
+    fotoIds: number[];
+}
+
 interface Props {
     product: Product;
     fotos: Foto[];
+    variations: Variation[];
 }
 
 const tipoProdutoLabels: Record<string, string> = {
@@ -51,7 +70,16 @@ const estoqueTipoLabels: Record<string, string> = {
     LIMITADO: 'Limitado',
 };
 
-export default function ProductsShow({ product, fotos }: Props) {
+function formatCurrency(value: string | null): string {
+    if (value === null) return '-';
+    return `R$ ${Number(value).toFixed(2)}`;
+}
+
+function getVariationSize(variation: Variation): string | null {
+    return variation.tamanhoRoupaAdulto || variation.tamanhoRoupaCrianca || variation.tamanhoCalcado || null;
+}
+
+export default function ProductsShow({ product, fotos, variations }: Props) {
     const categoryNames = Object.values(product.categoryNames || {});
 
     return (
@@ -210,6 +238,63 @@ export default function ProductsShow({ product, fotos }: Props) {
                         </CardContent>
                     </Card>
                 )}
+
+                {/* Variations */}
+                <Card className="max-w-3xl">
+                    <CardHeader>
+                        <CardTitle>Variacoes ({variations.length})</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {variations.length === 0 && (
+                            <p className="text-sm text-muted-foreground">Nenhuma variacao cadastrada.</p>
+                        )}
+                        {variations.length > 0 && (
+                            <div className="flex flex-col gap-3">
+                                {variations.map((variation) => {
+                                    const size = getVariationSize(variation);
+                                    return (
+                                        <div key={variation.id} className="flex flex-col gap-2 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {variation.corNome && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        {variation.corCodRgb && (
+                                                            <span
+                                                                className="inline-block h-4 w-4 rounded-full border"
+                                                                style={{ backgroundColor: variation.corCodRgb }}
+                                                            />
+                                                        )}
+                                                        <span className="text-sm font-medium">{variation.corNome}</span>
+                                                    </div>
+                                                )}
+                                                {size && (
+                                                    <Badge variant="outline">{size}</Badge>
+                                                )}
+                                                <Badge className={variation.active ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300' : 'border-gray-300 bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400'}>
+                                                    {variation.active ? 'Ativo' : 'Inativo'}
+                                                </Badge>
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                                                {variation.precoVenda && (
+                                                    <span title="Preco de Venda">
+                                                        {formatCurrency(variation.precoVenda)}
+                                                    </span>
+                                                )}
+                                                {variation.quantidadeEstoque > 0 && (
+                                                    <span title="Estoque">
+                                                        Estoque: {variation.quantidadeEstoque}
+                                                    </span>
+                                                )}
+                                                {variation.sku && (
+                                                    <span title="SKU">SKU: {variation.sku}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Timestamps */}
                 <Card className="max-w-3xl">

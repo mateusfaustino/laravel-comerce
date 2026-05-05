@@ -17,6 +17,7 @@ use App\Modules\ProductManagement\Application\Services\UpdateProductService;
 use App\Modules\ProductManagement\Domain\Repositories\CorRepositoryInterface;
 use App\Modules\ProductManagement\Domain\Repositories\FotoRepositoryInterface;
 use App\Modules\ProductManagement\Domain\Repositories\ProductRepositoryInterface;
+use App\Modules\ProductManagement\Domain\Repositories\ProductVariationRepositoryInterface;
 use App\Modules\ProductManagement\Presentation\Http\Requests\CreateProductRequest;
 use App\Modules\ProductManagement\Presentation\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\JsonResponse;
@@ -32,6 +33,7 @@ class ProductController extends Controller
         private CategoryRepositoryInterface $categoryRepository,
         private CorRepositoryInterface $corRepository,
         private FotoRepositoryInterface $fotoRepository,
+        private ProductVariationRepositoryInterface $variationRepository,
         private CreateFotoService $createFotoService,
         private ListProductsService $listProductsService,
         private ListProductVariationsService $listProductVariationsService,
@@ -132,10 +134,12 @@ class ProductController extends Controller
         }
 
         $fotos = $this->fotoRepository->findByProductId($id);
+        $variations = $this->variationRepository->findByProductId($id);
 
         return Inertia::render('admin/products/show', [
             'product' => $this->toArray($product),
             'fotos' => array_map([$this, 'fotoToArray'], $fotos),
+            'variations' => array_map([$this, 'variationToArray'], $variations),
         ]);
     }
 

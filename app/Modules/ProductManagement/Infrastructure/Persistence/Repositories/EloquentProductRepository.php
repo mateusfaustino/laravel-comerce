@@ -11,7 +11,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
 {
     public function findById(int $id): ?DomainProduct
     {
-        $model = EloquentProductModel::with('categories')->find($id);
+        $model = EloquentProductModel::with('categories')->withCount('variacoes')->find($id);
 
         return $model ? $this->toDomainEntity($model) : null;
     }
