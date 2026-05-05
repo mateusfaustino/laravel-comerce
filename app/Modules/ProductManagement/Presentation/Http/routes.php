@@ -101,6 +101,10 @@ Route::middleware(['auth', 'verified'])
             ->name('index')
             ->middleware('can:list_products');
 
+        Route::get('/by-product/{productId}', [FotoController::class, 'byProduct'])
+            ->name('by-product')
+            ->middleware('can:list_products');
+
         Route::get('/create', [FotoController::class, 'create'])
             ->name('create')
             ->middleware('can:register_product');

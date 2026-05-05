@@ -42,16 +42,16 @@ export default function FotosIndex({ products }: Props) {
     const fetchFotosForProduct = async (productId: number) => {
         setLoadingProducts((prev) => new Set(prev).add(productId));
         try {
-            const response = await fetch(`/admin/products/${productId}`, {
+            const response = await fetch(`/admin/fotos/by-product/${productId}`, {
                 headers: { Accept: 'application/json' },
                 credentials: 'same-origin',
             });
             const data = await response.json();
             setFotosByProduct((prev) => ({
                 ...prev,
-                [productId]: (data.product?.fotos || []).map((f: FotoWithProduct) => ({
+                [productId]: (data.fotos || []).map((f: FotoWithProduct) => ({
                     ...f,
-                    productName: data.product?.nome,
+                    productName: products.find((p) => p.id === productId)?.nome,
                 })),
             }));
         } catch {

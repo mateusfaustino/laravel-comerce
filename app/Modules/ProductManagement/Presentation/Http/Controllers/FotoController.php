@@ -10,6 +10,7 @@ use App\Modules\ProductManagement\Application\Services\UpdateFotoService;
 use App\Modules\ProductManagement\Domain\Repositories\FotoRepositoryInterface;
 use App\Modules\ProductManagement\Domain\Repositories\ProductRepositoryInterface;
 use App\Modules\ProductManagement\Presentation\Http\Requests\CreateFotoRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,6 +32,15 @@ class FotoController extends Controller
 
         return Inertia::render('admin/fotos/index', [
             'products' => array_map(fn ($p) => ['id' => $p->getId(), 'nome' => $p->getNome()], $products),
+        ]);
+    }
+
+    public function byProduct(int $productId): JsonResponse
+    {
+        $fotos = $this->fotoRepository->findByProductId($productId);
+
+        return response()->json([
+            'fotos' => array_map([$this, 'fotoToArray'], $fotos),
         ]);
     }
 
@@ -85,5 +95,16 @@ class FotoController extends Controller
 
         return redirect()->back()
             ->with('success', 'Foto excluida com sucesso.');
+    }
+
+    private function fotoToArray($foto): array
+    {
+        return [
+            'id' => $foto->getId(),
+            'path' => $foto->getPath(),
+            'productId' => $foto->getProductId(),
+            'descricao' => $foto->getDescricao(),
+            'ordem' => $foto->getOrdem(),
+        ];
     }
 }
