@@ -3,64 +3,89 @@ import { Head, Link, router } from '@inertiajs/react';
 import ProductCard from '@/components/store/product-card';
 import CartModal from '@/components/store/cart-modal';
 import { useCart } from '@/contexts/cart-context';
-import { products, Product } from '@/data/mock-store';
 
-interface ProductPageProps {
-    id: string;
+interface StorefrontProduct {
+    id: number;
+    nome: string;
+    slug: string;
+    price: string | null;
+    promotionalPrice: string | null;
+    image: string | null;
+    categoryName: string | null;
+    colors: string[];
+    sizes: string[];
+    isNew: boolean;
+    isFeatured: boolean;
 }
 
-export default function ProductPage({ id }: ProductPageProps) {
+interface ProductDetail {
+    id: number;
+    nome: string;
+    slug: string;
+    price: string | null;
+    promotionalPrice: string | null;
+    image: string | null;
+    categoryName: string | null;
+    categorySlug: string | null;
+    description: string | null;
+    images: string[];
+    colors: string[];
+    sizes: string[];
+    variations: {
+        id: number;
+        corId: number | null;
+        corNome: string | null;
+        corCodRgb: string | null;
+        tamanhoRoupaAdulto: string | null;
+        tamanhoRoupaCrianca: string | null;
+        tamanhoCalcado: string | null;
+        active: boolean;
+        quantidadeEstoque: number;
+        sku: string | null;
+        precoVenda: string | null;
+        precoPromocional: string | null;
+    }[];
+    isNew: boolean;
+    isFeatured: boolean;
+}
+
+interface Props {
+    product: ProductDetail;
+    similarProducts: StorefrontProduct[];
+}
+
+export default function ProductPage({ product, similarProducts }: Props) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
-    
+
     const { addToCart } = useCart();
 
-    // Convert id from string to number for comparison
-    const productId = parseInt(id, 10);
-    
-    const product = products.find(p => p.id === productId);
+    const allImages = product.images.length > 0 ? product.images : (product.image ? [product.image] : []);
 
-    if (!product) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Produto não encontrado</h1>
-                    <Link href="/" className="mt-4 inline-block text-rose-600 hover:text-rose-700">
-                        Voltar para a loja →
-                    </Link>
-                </div>
-            </div>
-        );
-    }
+    const numericPrice = product.price ? parseFloat(product.price) : 0;
+    const numericPromotionalPrice = product.promotionalPrice ? parseFloat(product.promotionalPrice) : null;
 
-    const similarProducts = products
-        .filter(p => p.category === product.category && p.id !== product.id)
-        .slice(0, 4);
-
-    const hasDiscount = product.promotionalPrice && product.promotionalPrice < product.price;
+    const hasDiscount = numericPromotionalPrice !== null && numericPromotionalPrice < numericPrice;
     const discountPercentage = hasDiscount
-        ? Math.round(((product.price - product.promotionalPrice!) / product.price) * 100)
+        ? Math.round(((numericPrice - numericPromotionalPrice!) / numericPrice) * 100)
         : 0;
 
     const handleAddToCart = () => {
-        if (!product) return;
-        
-        const price = product.promotionalPrice || product.price;
-        
+        const price = numericPromotionalPrice || numericPrice;
+
         addToCart({
             id: product.id,
-            name: product.name,
-            price: product.price,
-            promotionalPrice: product.promotionalPrice,
-            image: product.image,
+            name: product.nome,
+            price: price,
+            promotionalPrice: numericPromotionalPrice ?? undefined,
+            image: product.image || '',
             quantity: quantity,
             size: selectedSize,
             color: selectedColor,
         });
-        
-        // Show success message
+
         alert('Produto adicionado ao carrinho com sucesso!');
     };
 
@@ -69,12 +94,10 @@ export default function ProductPage({ id }: ProductPageProps) {
         router.visit('/checkout');
     };
 
-    const allImages = product.images || [product.image];
-
     return (
         <>
-            <Head title={`${product.name} | Fabulosa Stores`}>
-                <meta name="description" content={product.description} />
+            <Head title={`${product.nome} | Fabulosa Stores`}>
+                <meta name="description" content={product.description || product.nome} />
             </Head>
 
             <div className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
@@ -102,15 +125,22 @@ export default function ProductPage({ id }: ProductPageProps) {
                                 Início
                             </Link>
                         </li>
-                        <li className="text-gray-400">/</li>
-                        <li>
-                            <Link href={`/?categoria=${product.category.toLowerCase()}`} className="hover:text-rose-600 dark:hover:text-rose-400">
-                                {product.category}
-                            </Link>
-                        </li>
+                        {product.categoryName && (
+                            <>
+                                <li className="text-gray-400">/</li>
+                                <li>
+                                    <Link
+                                        href={product.categorySlug ? `/?categoria=${product.categorySlug}` : '/'}
+                                        className="hover:text-rose-600 dark:hover:text-rose-400"
+                                    >
+                                        {product.categoryName}
+                                    </Link>
+                                </li>
+                            </>
+                        )}
                         <li className="text-gray-400">/</li>
                         <li className="text-gray-900 dark:text-white font-medium" aria-current="page">
-                            {product.name}
+                            {product.nome}
                         </li>
                     </ol>
                 </nav>
@@ -122,12 +152,20 @@ export default function ProductPage({ id }: ProductPageProps) {
                         <div className="space-y-4">
                             {/* Main Image */}
                             <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-gray-800">
-                                <img
-                                    src={allImages[selectedImage]}
-                                    alt={`${product.name} - vista ${selectedImage + 1}`}
-                                    className="h-full w-full object-cover object-center"
-                                    loading="lazy"
-                                />
+                                {allImages.length > 0 ? (
+                                    <img
+                                        src={allImages[selectedImage]}
+                                        alt={`${product.nome} - vista ${selectedImage + 1}`}
+                                        className="h-full w-full object-cover object-center"
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-100 to-pink-100 dark:from-gray-700 dark:to-gray-600">
+                                        <span className="text-6xl font-bold text-rose-300 dark:text-gray-500">
+                                            {product.nome.charAt(0)}
+                                        </span>
+                                    </div>
+                                )}
                                 {hasDiscount && (
                                     <span className="absolute left-4 top-4 rounded-sm bg-[#f53003] px-3 py-1.5 text-sm font-bold text-white">
                                         -{discountPercentage}%
@@ -147,12 +185,12 @@ export default function ProductPage({ id }: ProductPageProps) {
                                                     ? 'border-rose-500 ring-2 ring-rose-200'
                                                     : 'border-gray-200 hover:border-rose-300'
                                             }`}
-                                            aria-label={`Ver imagem ${index + 1} de ${product.name}`}
+                                            aria-label={`Ver imagem ${index + 1} de ${product.nome}`}
                                             aria-pressed={selectedImage === index}
                                         >
                                             <img
                                                 src={image}
-                                                alt={`${product.name} - miniatura ${index + 1}`}
+                                                alt={`${product.nome} - miniatura ${index + 1}`}
                                                 className="h-full w-full object-cover object-center"
                                                 loading="lazy"
                                             />
@@ -167,48 +205,54 @@ export default function ProductPage({ id }: ProductPageProps) {
                             {/* Title & Price */}
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">
-                                    {product.name}
+                                    {product.nome}
                                 </h1>
-                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                    Categoria: {product.category} {product.subcategory && `› ${product.subcategory}`}
-                                </p>
-                            </div>
-
-                            {/* Price */}
-                            <div className="rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 p-6 dark:from-gray-800 dark:to-gray-700">
-                                <div className="flex items-baseline gap-3">
-                                    {hasDiscount ? (
-                                        <>
-                                            <span className="text-3xl font-bold text-rose-600 dark:text-rose-400">
-                                                R$ {product.promotionalPrice!.toFixed(2).replace('.', ',')}
-                                            </span>
-                                            <span className="text-lg text-gray-500 line-through">
-                                                R$ {product.price.toFixed(2).replace('.', ',')}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                                            R$ {product.price.toFixed(2).replace('.', ',')}
-                                        </span>
-                                    )}
-                                </div>
-                                {hasDiscount && (
-                                    <p className="mt-2 text-sm text-green-600 dark:text-green-400">
-                                        Você economiza R$ {(product.price - product.promotionalPrice!).toFixed(2).replace('.', ',')}
+                                {product.categoryName && (
+                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                        Categoria: {product.categoryName}
                                     </p>
                                 )}
                             </div>
 
+                            {/* Price */}
+                            {(numericPrice > 0) && (
+                                <div className="rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 p-6 dark:from-gray-800 dark:to-gray-700">
+                                    <div className="flex items-baseline gap-3">
+                                        {hasDiscount ? (
+                                            <>
+                                                <span className="text-3xl font-bold text-rose-600 dark:text-rose-400">
+                                                    R$ {numericPromotionalPrice!.toFixed(2).replace('.', ',')}
+                                                </span>
+                                                <span className="text-lg text-gray-500 line-through">
+                                                    R$ {numericPrice.toFixed(2).replace('.', ',')}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                                                R$ {numericPrice.toFixed(2).replace('.', ',')}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {hasDiscount && (
+                                        <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                                            Você economiza R$ {(numericPrice - numericPromotionalPrice!).toFixed(2).replace('.', ',')}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Description */}
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Descrição</h2>
-                                <p className="mt-2 text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    {product.description}
-                                </p>
-                            </div>
+                            {product.description && (
+                                <div>
+                                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Descrição</h2>
+                                    <p className="mt-2 text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        {product.description}
+                                    </p>
+                                </div>
+                            )}
 
                             {/* Color Selection */}
-                            {product.colors && product.colors.length > 0 && (
+                            {product.colors.length > 0 && (
                                 <div>
                                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Cor</h2>
                                     <div className="mt-3 flex flex-wrap gap-3">
@@ -231,7 +275,7 @@ export default function ProductPage({ id }: ProductPageProps) {
                             )}
 
                             {/* Size Selection */}
-                            {product.sizes && product.sizes.length > 0 && (
+                            {product.sizes.length > 0 && (
                                 <div>
                                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tamanho</h2>
                                     <div className="mt-3 flex flex-wrap gap-2">

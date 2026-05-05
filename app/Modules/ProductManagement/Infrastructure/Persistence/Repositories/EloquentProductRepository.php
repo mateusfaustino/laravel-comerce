@@ -150,6 +150,44 @@ class EloquentProductRepository implements ProductRepositoryInterface
         $model->delete();
     }
 
+    public function findByCategoryId(int $categoryId, int $limit): array
+    {
+        $models = EloquentProductModel::where('active', true)
+            ->whereHas('categories', fn ($q) => $q->where('categories.id', $categoryId))
+            ->with('categories')
+            ->withCount('variacoes')
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return $models->map(fn (EloquentProductModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function findRecent(int $limit): array
+    {
+        $models = EloquentProductModel::where('active', true)
+            ->with('categories')
+            ->withCount('variacoes')
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return $models->map(fn (EloquentProductModel $m) => $this->toDomainEntity($m))->all();
+    }
+
+    public function findWithThumbnail(int $limit): array
+    {
+        $models = EloquentProductModel::where('active', true)
+            ->whereNotNull('thumbnail_foto_id')
+            ->with('categories')
+            ->withCount('variacoes')
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return $models->map(fn (EloquentProductModel $m) => $this->toDomainEntity($m))->all();
+    }
+
     private function toDomainEntity(EloquentProductModel $model): DomainProduct
     {
         $product = new DomainProduct(

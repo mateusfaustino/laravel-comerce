@@ -3,17 +3,20 @@
 </role>
 
 <context>
-
+Atualmente a vitrine da loja, ou seja, as rotas home e product.show estão mocadas
+o correto é elas estarem em um módulo a parte, o módulo Storefront.
+Assim funcionrá o módulo Storefront:
+Deverá ter a mesma cara do atual front só que ao invés de ser mocado, ele deve usar os dados do banco de dados, coforme foram adicionados pelo admin.
 </context>
 
 <goal>
-  Fazer as fotos e variações aparecerem em editar e detalhes de produto
+  Criar o módulo de Storefront
 </goal>
 
 
 <instructions>
-1. Faça as fotos do produto aparecerem em editar produto e detalhes do produto;
-2. Documente a implementação no arquivo docs\changelog\05_product_management\09_refactor_product_edit_detail_add_foto\implementação.md. Nesse arquivo escreva o comando de commit com uma boa mensagem conforme as boas práticas. Além disso liste todos os comandos necessários para aplicar as mudnaças.
+1. Crie o módulo de Storefront;
+2. Documente a implementação no arquivo docs\changelog\06_storefront\01_storefront_module\implementação.md Nesse arquivo escreva o comando de commit com uma boa mensagem conforme as boas práticas. Além disso liste todos os comandos necessários para aplicar as mudnaças.
 
 </instructions>
 

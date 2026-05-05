@@ -48,4 +48,25 @@ interface ProductRepositoryInterface
     public function findInactive(): array;
 
     public function permanentlyDelete(int $id): void;
+
+    /**
+     * Find active products belonging to a specific category.
+     *
+     * @return array<Product>
+     */
+    public function findByCategoryId(int $categoryId, int $limit): array;
+
+    /**
+     * Find most recently created active products.
+     *
+     * @return array<Product>
+     */
+    public function findRecent(int $limit): array;
+
+    /**
+     * Find active products that have a thumbnail foto set.
+     *
+     * @return array<Product>
+     */
+    public function findWithThumbnail(int $limit): array;
 }

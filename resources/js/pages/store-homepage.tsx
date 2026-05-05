@@ -1,11 +1,40 @@
 import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import ProductCard from '@/components/store/product-card';
-import CategoryCard from '@/components/store/category-card';
 import CartModal from '@/components/store/cart-modal';
-import { products, categories, featuredProducts, newProducts, lingerieProducts, nightLineProducts, maternityProducts } from '@/data/mock-store';
 
-export default function StoreHomepage() {
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    image: string | null;
+    description: string | null;
+    subcategories: { name: string; slug: string }[];
+    productCount: number;
+}
+
+interface StorefrontProduct {
+    id: number;
+    nome: string;
+    slug: string;
+    price: string | null;
+    promotionalPrice: string | null;
+    image: string | null;
+    categoryName: string | null;
+    colors: string[];
+    sizes: string[];
+    isNew: boolean;
+    isFeatured: boolean;
+}
+
+interface Props {
+    categories: Category[];
+    featuredProducts: StorefrontProduct[];
+    newProducts: StorefrontProduct[];
+    categoryProducts: Record<string, StorefrontProduct[]>;
+}
+
+export default function StoreHomepage({ categories, featuredProducts, newProducts, categoryProducts }: Props) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {
@@ -222,156 +251,129 @@ export default function StoreHomepage() {
                             Explore nossas categorias e encontre o estilo perfeito para você
                         </p>
                     </div>
-                    
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {categories.map((category) => (
-                            <div
-                                key={category.id}
-                                className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:bg-gray-800"
-                            >
-                                <Link href={`/categoria/${category.slug}`}>
-                                    <div className="aspect-[4/3] overflow-hidden">
-                                        <img
-                                            src={category.image}
-                                            alt={category.name}
-                                            loading="lazy"
-                                            className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                                    </div>
-                                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                        <h3 className="text-2xl font-bold mb-2">{category.name}</h3>
-                                        <p className="text-sm text-gray-200 mb-3">{category.description}</p>
-                                        {category.subcategories && (
-                                            <div className="flex flex-wrap gap-2">
-                                                {category.subcategories.map((sub) => (
-                                                    <span
-                                                        key={sub.slug}
-                                                        className="rounded-full bg-white/20 px-3 py-1 text-xs backdrop-blur-sm"
-                                                    >
-                                                        {sub.name}
+
+                    {categories.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            {categories.map((category) => (
+                                <div
+                                    key={category.id}
+                                    className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:bg-gray-800"
+                                >
+                                    <Link href={`/categoria/${category.slug}`}>
+                                        <div className="aspect-[4/3] overflow-hidden">
+                                            {category.image ? (
+                                                <img
+                                                    src={category.image}
+                                                    alt={category.name}
+                                                    loading="lazy"
+                                                    className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-100 to-pink-100 dark:from-gray-700 dark:to-gray-600">
+                                                    <span className="text-4xl font-bold text-rose-300 dark:text-gray-500">
+                                                        {category.name.charAt(0)}
                                                     </span>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                                        </div>
+                                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                            <h3 className="text-2xl font-bold mb-2">{category.name}</h3>
+                                            <p className="text-sm text-gray-200 mb-3">
+                                                {category.productCount} produto{category.productCount !== 1 ? 's' : ''}
+                                            </p>
+                                            {category.subcategories.length > 0 && (
+                                                <div className="flex flex-wrap gap-2">
+                                                    {category.subcategories.map((sub) => (
+                                                        <span
+                                                            key={sub.slug}
+                                                            className="rounded-full bg-white/20 px-3 py-1 text-xs backdrop-blur-sm"
+                                                        >
+                                                            {sub.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-gray-500 dark:text-gray-400">
+                            Nenhuma categoria disponível no momento.
+                        </p>
+                    )}
                 </section>
 
                 {/* Featured Products */}
-                <section className="bg-gradient-to-b from-white to-rose-50 py-12 dark:from-gray-900 dark:to-gray-800 md:py-16">
-                    <div className="container mx-auto px-4">
+                {featuredProducts.length > 0 && (
+                    <section className="bg-gradient-to-b from-white to-rose-50 py-12 dark:from-gray-900 dark:to-gray-800 md:py-16">
+                        <div className="container mx-auto px-4">
+                            <div className="mb-12 text-center">
+                                <h2 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
+                                    Destaques
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    Peças selecionadas especialmente para você
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                {featuredProducts.map((product) => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {/* New Arrivals */}
+                {newProducts.length > 0 && (
+                    <section className="container mx-auto px-4 py-12 md:py-16">
                         <div className="mb-12 text-center">
                             <h2 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
-                                Destaques
+                                Lançamentos
                             </h2>
                             <p className="text-gray-600 dark:text-gray-400">
-                                Peças selecionadas especialmente para você
+                                As novidades que você estava esperando
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                            {featuredProducts.map((product) => (
+                            {newProducts.map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
 
-                {/* New Arrivals */}
-                <section className="container mx-auto px-4 py-12 md:py-16">
-                    <div className="mb-12 text-center">
-                        <h2 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
-                            Lançamentos
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            As novidades que você estava esperando
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {newProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
-                    </div>
-                </section>
-
-                {/* Special Categories Showcase */}
-                <section className="bg-gradient-to-b from-pink-50 to-white py-12 dark:from-gray-800 dark:to-gray-900 md:py-16">
-                    <div className="container mx-auto px-4">
-                        <div className="mb-12 text-center">
-                            <h2 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
-                                Categorias Especiais
-                            </h2>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Coleções exclusivas para momentos únicos
-                            </p>
-                        </div>
-
-                        <div className="space-y-12">
-                            {/* Lingerie Section */}
-                            <div>
-                                <div className="mb-6 flex items-center justify-between">
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        Lingerie
-                                    </h3>
+                {/* Products by Category */}
+                {Object.entries(categoryProducts).map(([categoryName, products]) => (
+                    <section
+                        key={categoryName}
+                        className="bg-gradient-to-b from-pink-50 to-white py-12 dark:from-gray-800 dark:to-gray-900 md:py-16"
+                    >
+                        <div className="container mx-auto px-4">
+                            <div className="mb-6 flex items-center justify-between">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {categoryName}
+                                </h2>
+                                {categories.find((c) => c.name === categoryName) && (
                                     <Link
-                                        href="/categoria/lingerie"
+                                        href={`/categoria/${categories.find((c) => c.name === categoryName)!.slug}`}
                                         className="text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
                                     >
                                         Ver todos →
                                     </Link>
-                                </div>
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                                    {lingerieProducts.slice(0, 4).map((product) => (
-                                        <ProductCard key={product.id} product={product} />
-                                    ))}
-                                </div>
+                                )}
                             </div>
-
-                            {/* Maternity Section */}
-                            <div>
-                                <div className="mb-6 flex items-center justify-between">
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        Moda Gestante
-                                    </h3>
-                                    <Link
-                                        href="/categoria/moda-gestante"
-                                        className="text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
-                                    >
-                                        Ver todos →
-                                    </Link>
-                                </div>
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                                    {maternityProducts.slice(0, 4).map((product) => (
-                                        <ProductCard key={product.id} product={product} />
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Night Line Section */}
-                            <div>
-                                <div className="mb-6 flex items-center justify-between">
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        Linha Noite
-                                    </h3>
-                                    <Link
-                                        href="/categoria/linha-noite"
-                                        className="text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
-                                    >
-                                        Ver todos →
-                                    </Link>
-                                </div>
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                                    {nightLineProducts.slice(0, 4).map((product) => (
-                                        <ProductCard key={product.id} product={product} />
-                                    ))}
-                                </div>
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                {products.map((product) => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                ))}
 
                 {/* Newsletter */}
                 <section className="bg-gradient-to-r from-rose-500 to-pink-500 py-12 md:py-16">
