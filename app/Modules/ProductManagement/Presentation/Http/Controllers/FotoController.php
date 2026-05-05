@@ -13,6 +13,7 @@ use App\Modules\ProductManagement\Presentation\Http\Requests\CreateFotoRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -102,6 +103,7 @@ class FotoController extends Controller
         return [
             'id' => $foto->getId(),
             'path' => $foto->getPath(),
+            'url' => Storage::disk('public')->url($foto->getPath()),
             'productId' => $foto->getProductId(),
             'descricao' => $foto->getDescricao(),
             'ordem' => $foto->getOrdem(),

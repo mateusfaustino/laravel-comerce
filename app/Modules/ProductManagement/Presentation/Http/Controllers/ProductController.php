@@ -23,6 +23,7 @@ use App\Modules\ProductManagement\Presentation\Http\Requests\UpdateProductReques
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -119,7 +120,20 @@ class ProductController extends Controller
             variations: $request->validated('variations'),
         );
 
-        $this->createProductService->execute($dto);
+        $product = $this->createProductService->execute($dto);
+
+        if ($request->hasFile('fotos')) {
+            foreach ($request->file('fotos') as $file) {
+                $path = $file->store('products', 'public');
+                $fotoDto = new CreateFotoDTO(
+                    path: $path,
+                    productId: (int) $product->getId(),
+                    descricao: null,
+                    ordem: 0,
+                );
+                $this->createFotoService->execute($fotoDto);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produto criado com sucesso.');
@@ -282,6 +296,7 @@ class ProductController extends Controller
         return [
             'id' => $foto->getId(),
             'path' => $foto->getPath(),
+            'url' => Storage::disk('public')->url($foto->getPath()),
             'productId' => $foto->getProductId(),
             'descricao' => $foto->getDescricao(),
             'ordem' => $foto->getOrdem(),

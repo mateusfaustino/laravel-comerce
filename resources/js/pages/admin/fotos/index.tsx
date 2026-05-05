@@ -22,6 +22,7 @@ interface Product {
 interface FotoWithProduct {
     id: number;
     path: string;
+    url: string;
     productId: number;
     descricao: string | null;
     ordem: number;
@@ -165,7 +166,7 @@ export default function FotosIndex({ products }: Props) {
                                                 {fotos.map((foto) => (
                                                     <div key={foto.id} className="group relative overflow-hidden rounded-md border">
                                                         <img
-                                                            src={`/storage/${foto.path}`}
+                                                            src={foto.url}
                                                             alt={foto.descricao || `Foto ${foto.ordem}`}
                                                             className="aspect-square w-full object-cover"
                                                         />
