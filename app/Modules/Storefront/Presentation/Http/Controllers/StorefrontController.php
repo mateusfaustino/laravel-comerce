@@ -4,6 +4,7 @@ namespace App\Modules\Storefront\Presentation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Storefront\Application\Services\GetStorefrontProductService;
+use App\Modules\Storefront\Application\Services\ListStorefrontCategoryService;
 use App\Modules\Storefront\Application\Services\ListStorefrontHomeService;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -13,6 +14,7 @@ class StorefrontController extends Controller
     public function __construct(
         private ListStorefrontHomeService $listStorefrontHomeService,
         private GetStorefrontProductService $getStorefrontProductService,
+        private ListStorefrontCategoryService $listStorefrontCategoryService,
     ) {}
 
     public function home(Request $request): Response
@@ -38,6 +40,20 @@ class StorefrontController extends Controller
         return inertia('product-page', [
             'product' => $data['product'],
             'similarProducts' => $data['similarProducts'],
+        ]);
+    }
+
+    public function category(string $slug): Response
+    {
+        $data = $this->listStorefrontCategoryService->execute($slug);
+
+        if ($data === null) {
+            abort(404);
+        }
+
+        return inertia('category-page', [
+            'category' => $data['category'],
+            'products' => $data['products'],
         ]);
     }
 }
