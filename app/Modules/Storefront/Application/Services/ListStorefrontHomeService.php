@@ -28,18 +28,26 @@ class ListStorefrontHomeService
 
         $categories = [];
         foreach ($rootCategories as $category) {
+            $productCount = count($this->productRepository->findByCategoryId($category->getId(), 1000));
+
+            // Skip categories with no products
+            if ($productCount === 0) {
+                continue;
+            }
+
             $children = $this->categoryRepository->findChildren($category->getId());
             $subcategories = [];
             foreach ($children as $child) {
                 if ($child->isActive()) {
-                    $subcategories[] = [
-                        'name' => $child->getName(),
-                        'slug' => $child->getSlug(),
-                    ];
+                    $childProductCount = count($this->productRepository->findByCategoryId($child->getId(), 1000));
+                    if ($childProductCount > 0) {
+                        $subcategories[] = [
+                            'name' => $child->getName(),
+                            'slug' => $child->getSlug(),
+                        ];
+                    }
                 }
             }
-
-            $productCount = count($this->productRepository->findByCategoryId($category->getId(), 1000));
 
             $categories[] = new StorefrontCategoryDTO(
                 id: $category->getId(),
