@@ -1,7 +1,7 @@
 # Implementação — Corrigir cores no card do produto
 
 ## Resumo
-As cores nos cards de produto mostravam apenas o código RGB hex como tooltip. Agora as cores são exibidas como bolinhas com background correto (via `codRgb`) e ao passar o mouse mostra o **nome da cor** (via `nome`) em vez do código RGB.
+As cores nos cards de produto mostravam apenas o código RGB hex como tooltip, e o background das bolinhas não aparecia. Causa raiz: o banco armazena `cod_rgb` sem o prefixo `#` (ex: `FF0000`), mas CSS exige `#FF0000`. Correção: adicionar `#` no backend ao montar o DTO, e usar `color.nome` no tooltip em vez do código.
 
 ## Arquivos Modificados
 
@@ -20,8 +20,9 @@ As cores nos cards de produto mostravam apenas o código RGB hex como tooltip. A
 ## Alteração Detalhada
 
 ### Backend
-- Antes: `$colors[] = $variation->getCorCodRgb()` → array de strings hex
-- Depois: `$colors[] = ['nome' => $variation->getCorNome(), 'codRgb' => $variation->getCorCodRgb()]` → array de objetos
+- Antes: `$colors[] = $variation->getCorCodRgb()` → array de strings hex sem `#`
+- Depois: `$colors[] = ['nome' => getCorNome(), 'codRgb' => '#' . getCorCodRgb()]` → array de objetos com `#` prefix
+- O banco armazena `cod_rgb` como `varchar(6)` sem `#`, então `'#' .` é necessário para CSS válido
 - Deduplicação mudou de `in_array($codRgb, $colors)` para `in_array($codRgb, array_column($colors, 'codRgb'))`
 
 ### Frontend
@@ -32,8 +33,9 @@ As cores nos cards de produto mostravam apenas o código RGB hex como tooltip. A
 ## Comando de Commit
 
 ```bash
-git add -A && git commit -m "fix(storefront): show color name instead of hex code in product cards
+git add -A && git commit -m "fix(storefront): fix color background and show color name on product cards
 
+- Add # prefix to codRgb for valid CSS backgroundColor
 - Change colors from string[] to {nome, codRgb}[] in DTOs and services
 - Display color name on hover (title) instead of RGB hex code
 - Use codRgb for background color, nome for tooltip and aria-label

@@ -154,10 +154,11 @@ class ListStorefrontHomeService
             if ($variation->getPrecoPromocional() !== null && $promotionalPrice === null) {
                 $promotionalPrice = $variation->getPrecoPromocional();
             }
-            if ($variation->getCorCodRgb() !== null && ! in_array($variation->getCorCodRgb(), array_column($colors, 'codRgb'))) {
+            $codRgb = $variation->getCorCodRgb();
+            if ($codRgb !== null && ! in_array($codRgb, array_column($colors, 'codRgb'))) {
                 $colors[] = [
                     'nome' => $variation->getCorNome(),
-                    'codRgb' => $variation->getCorCodRgb(),
+                    'codRgb' => '#' . $codRgb,
                 ];
             }
             $sizeValue = $variation->getTamanhoRoupaAdulto()
