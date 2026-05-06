@@ -5,7 +5,7 @@ namespace App\Modules\Storefront\Application\DTOs;
 class StorefrontProductDTO
 {
     /**
-     * @param  array<string>  $colors
+     * @param  array<array{nome: string, codRgb: string}>  $colors
      * @param  array<string>  $sizes
      */
     public function __construct(

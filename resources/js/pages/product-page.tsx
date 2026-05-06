@@ -12,7 +12,7 @@ interface StorefrontProduct {
     promotionalPrice: string | null;
     image: string | null;
     categoryName: string | null;
-    colors: string[];
+    colors: { nome: string; codRgb: string }[];
     sizes: string[];
     isNew: boolean;
     isFeatured: boolean;
@@ -29,7 +29,7 @@ interface ProductDetail {
     categorySlug: string | null;
     description: string | null;
     images: string[];
-    colors: string[];
+    colors: { nome: string; codRgb: string }[];
     sizes: string[];
     variations: {
         id: number;
@@ -258,16 +258,17 @@ export default function ProductPage({ product, similarProducts }: Props) {
                                     <div className="mt-3 flex flex-wrap gap-3">
                                         {product.colors.map((color) => (
                                             <button
-                                                key={color}
-                                                onClick={() => setSelectedColor(color)}
+                                                key={color.codRgb}
+                                                onClick={() => setSelectedColor(color.codRgb)}
                                                 className={`h-12 w-12 rounded-full border-2 transition-all ${
-                                                    selectedColor === color
+                                                    selectedColor === color.codRgb
                                                         ? 'border-rose-500 ring-2 ring-rose-200 scale-110'
                                                         : 'border-gray-300 hover:border-rose-300'
                                                 }`}
-                                                style={{ backgroundColor: color }}
-                                                aria-label={`Selecionar cor ${color}`}
-                                                aria-pressed={selectedColor === color}
+                                                style={{ backgroundColor: color.codRgb }}
+                                                aria-label={`Selecionar cor ${color.nome}`}
+                                                aria-pressed={selectedColor === color.codRgb}
+                                                title={color.nome}
                                             />
                                         ))}
                                     </div>

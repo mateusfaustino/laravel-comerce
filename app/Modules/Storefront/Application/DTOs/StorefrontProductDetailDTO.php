@@ -6,7 +6,7 @@ class StorefrontProductDetailDTO
 {
     /**
      * @param  array<string>  $images
-     * @param  array<string>  $colors
+     * @param  array<array{nome: string, codRgb: string}>  $colors
      * @param  array<string>  $sizes
      * @param  array<array<string, mixed>>  $variations
      */

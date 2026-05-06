@@ -28,7 +28,7 @@ interface StorefrontProduct {
     promotionalPrice: string | null;
     image: string | null;
     categoryName: string | null;
-    colors: string[];
+    colors: { nome: string; codRgb: string }[];
     sizes: string[];
     isNew: boolean;
     isFeatured: boolean;

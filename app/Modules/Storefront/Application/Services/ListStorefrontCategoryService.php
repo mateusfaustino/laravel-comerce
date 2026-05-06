@@ -160,8 +160,11 @@ class ListStorefrontCategoryService
             if ($variation->getPrecoPromocional() !== null && $promotionalPrice === null) {
                 $promotionalPrice = $variation->getPrecoPromocional();
             }
-            if ($variation->getCorCodRgb() !== null && ! in_array($variation->getCorCodRgb(), $colors)) {
-                $colors[] = $variation->getCorCodRgb();
+            if ($variation->getCorCodRgb() !== null && ! in_array($variation->getCorCodRgb(), array_column($colors, 'codRgb'))) {
+                $colors[] = [
+                    'nome' => $variation->getCorNome(),
+                    'codRgb' => $variation->getCorCodRgb(),
+                ];
             }
             $sizeValue = $variation->getTamanhoRoupaAdulto()
                 ?? $variation->getTamanhoRoupaCrianca()

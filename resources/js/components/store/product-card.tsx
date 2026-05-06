@@ -8,7 +8,7 @@ interface StorefrontProduct {
     promotionalPrice: string | null;
     image: string | null;
     categoryName: string | null;
-    colors: string[];
+    colors: { nome: string; codRgb: string }[];
     sizes: string[];
     isNew: boolean;
     isFeatured: boolean;
@@ -86,8 +86,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                             <span
                                 key={index}
                                 className="inline-block h-3 w-3 rounded-full border border-gray-300 dark:border-gray-600"
-                                style={{ backgroundColor: color }}
-                                title={color}
+                                style={{ backgroundColor: color.codRgb }}
+                                title={color.nome}
                             />
                         ))}
                         {product.colors.length > 3 && (
