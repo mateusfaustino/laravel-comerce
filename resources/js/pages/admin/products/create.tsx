@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Loader2, Plus, Trash2, Upload } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -211,12 +211,16 @@ export default function ProductsCreate({ categories, subcategories, cores }: Pro
         setData('fotos', data.fotos.filter((_, i) => i !== index));
     };
 
+    // Keep Inertia form data 'tags' in sync with TagPicker local state to avoid stale closure on submit.
+    useEffect(() => {
+        const payload: (number | string)[] = tagsValue.map((t) => (t.id !== undefined ? t.id : t.description));
+        setData('tags', payload);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tagsValue]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const tagsPayload: (number | string)[] = tagsValue.map((t) => (t.id !== undefined ? t.id : t.description));
-        setData('tags', tagsPayload);
-        // Send next-tick so setData is flushed before post.
-        setTimeout(() => post('/admin/products'), 0);
+        post('/admin/products');
     };
 
     return (

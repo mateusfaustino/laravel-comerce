@@ -1,6 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Loader2, Plus, Trash2 } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -208,11 +208,16 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
         setData('category_ids', data.category_ids.filter((id) => !childIds.includes(id)));
     };
 
+    // Keep Inertia form data 'tags' in sync with TagPicker local state to avoid stale closure on submit.
+    useEffect(() => {
+        const payload: (number | string)[] = tagsValue.map((t) => (t.id !== undefined ? t.id : t.description));
+        setData('tags', payload);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tagsValue]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const tagsPayload: (number | string)[] = tagsValue.map((t) => (t.id !== undefined ? t.id : t.description));
-        setData('tags', tagsPayload);
-        setTimeout(() => put(`/admin/products/${product.id}`), 0);
+        put(`/admin/products/${product.id}`);
     };
 
     const handleVariationSubmit = (e: React.FormEvent) => {
