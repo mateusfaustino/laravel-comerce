@@ -4,6 +4,7 @@ namespace App\Modules\TagManagement\Infrastructure\Providers;
 
 use App\Modules\TagManagement\Domain\Repositories\TagRepositoryInterface;
 use App\Modules\TagManagement\Infrastructure\Persistence\Repositories\EloquentTagRepository;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class TagManagementServiceProvider extends ServiceProvider
@@ -22,8 +23,9 @@ class TagManagementServiceProvider extends ServiceProvider
             __DIR__.'/../Persistence/Migrations'
         );
 
-        $this->loadRoutesFrom(
-            __DIR__.'/../../Presentation/Http/routes.php'
-        );
+        // Wrap routes in the 'web' middleware group so session-based auth
+        // (and CSRF) is active. Without it, 'auth' returns Unauthenticated.
+        Route::middleware('web')
+            ->group(__DIR__.'/../../Presentation/Http/routes.php');
     }
 }

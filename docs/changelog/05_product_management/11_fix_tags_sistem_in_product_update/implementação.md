@@ -1,6 +1,6 @@
 # Fix — Tags não enviadas no payload do PUT /admin/products/{id}
 
-## Problema
+## Problema 1 — Payload `tags` vazio em PUT/POST /admin/products
 
 Ao editar um produto via `PUT /admin/products/{id}`, o campo `tags` chegava ao backend sempre como array vazio (`tags: []`), mesmo que o usuário tivesse adicionado tags no `TagPicker`. O mesmo defeito existia em `POST /admin/products` (criação).
 
@@ -97,26 +97,82 @@ npm run dev
 
 Nenhuma migration, sync de roles, cache de rotas/config ou alteração de banco é necessária.
 
+---
+
+## Problema 2 — `/admin/tags/search` retorna `Unauthenticated.` mesmo com sessão ativa
+
+### Sintoma
+
+Chamadas para `GET /admin/tags/search?q=am&limit=10` (e qualquer outra rota do módulo `TagManagement`) respondem `401 { "message": "Unauthenticated." }`, mesmo com o usuário logado.
+
+### Causa raiz
+
+O `TagManagementServiceProvider::boot()` registrava as rotas via `$this->loadRoutesFrom(...)`. Esse método **não aplica** o middleware group `web` — logo, a sessão não é iniciada na request, o `auth` middleware não encontra o usuário autenticado e responde `Unauthenticated`.
+
+Os demais módulos do projeto fazem isso corretamente:
+
+- `CategoryManagement` e `ProductManagement` registram suas rotas em `bootstrap/app.php` envoltas em `Route::middleware('web')->group(...)`.
+- `StorefrontServiceProvider` faz `Route::middleware('web')->group(__DIR__ . '/../../Presentation/Http/routes.php')`.
+
+### Correção
+
+Em `app/Modules/TagManagement/Infrastructure/Providers/TagManagementServiceProvider.php`, substituir `loadRoutesFrom` por `Route::middleware('web')->group(...)`:
+
+```php
+use Illuminate\Support\Facades\Route;
+
+// ...
+public function boot(): void
+{
+    $this->loadMigrationsFrom(__DIR__.'/../Persistence/Migrations');
+
+    // Wrap routes in the 'web' middleware group so session-based auth
+    // (and CSRF) is active. Without it, 'auth' returns Unauthenticated.
+    Route::middleware('web')
+        ->group(__DIR__.'/../../Presentation/Http/routes.php');
+}
+```
+
+### Aplicar a correção
+
+```bash
+php artisan route:clear
+php artisan config:clear
+```
+
+Nenhum rebuild de assets é necessário (correção puramente backend).
+
+### Arquivos modificados (Problema 2)
+
+- `app/Modules/TagManagement/Infrastructure/Providers/TagManagementServiceProvider.php`
+
+---
+
 ## Commit
 
 ```bash
 git add resources/js/pages/admin/products/edit.tsx \
         resources/js/pages/admin/products/create.tsx \
+        app/Modules/TagManagement/Infrastructure/Providers/TagManagementServiceProvider.php \
         docs/changelog/05_product_management/11_fix_tags_sistem_in_product_update/implementação.md
 
-git commit -m "fix(products): sync TagPicker state with Inertia form to persist tags on submit
+git commit -m "fix(products,tags): persist tags on submit and restore session auth on tag routes
 
-- Replace setTimeout/setData race condition in handleSubmit with a useEffect
-  that keeps useForm 'data.tags' in sync with the TagPicker's local state.
-- Fixes empty 'tags' array in PUT /admin/products/{id} and POST /admin/products
-  payloads when the user adds tags via the picker.
-- Root cause: Inertia's put/post are captured by closure with the data snapshot
-  at render time; setTimeout(0) does not refresh the closure, so submissions
-  used the stale (empty) tags array.
+- products edit/create: replace setTimeout/setData race condition in handleSubmit
+  with a useEffect that keeps Inertia useForm 'data.tags' in sync with the
+  TagPicker's local state. Fixes empty 'tags' array in PUT /admin/products/{id}
+  and POST /admin/products payloads. Root cause: Inertia's put/post are captured
+  by closure with the data snapshot at render time; setTimeout(0) does not
+  refresh the closure, so submissions used the stale (empty) tags array.
+- TagManagementServiceProvider: wrap module routes in Route::middleware('web')
+  ->group(...) instead of loadRoutesFrom(). Without the 'web' middleware group,
+  sessions weren't started and 'auth' always responded Unauthenticated, breaking
+  /admin/tags/search and every other tag route.
 
 Affected files:
 - resources/js/pages/admin/products/edit.tsx
 - resources/js/pages/admin/products/create.tsx
+- app/Modules/TagManagement/Infrastructure/Providers/TagManagementServiceProvider.php
 
 Refs: docs/changelog/05_product_management/11_fix_tags_sistem_in_product_update"
 ```
