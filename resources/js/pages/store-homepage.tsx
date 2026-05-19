@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import ProductCard from '@/components/store/product-card';
 import CartModal from '@/components/store/cart-modal';
+import SearchBar from '@/components/store/search-bar';
 
 interface Category {
     id: number;
@@ -35,15 +35,6 @@ interface Props {
 }
 
 export default function StoreHomepage({ categories, featuredProducts, newProducts, categoryProducts }: Props) {
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Searching for:', searchTerm);
-        return false;
-    };
-
     const handleNewsletterSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -78,43 +69,7 @@ export default function StoreHomepage({ categories, featuredProducts, newProduct
                             </Link>
 
                             {/* Search Bar - Desktop */}
-                            <form
-                                onSubmit={handleSearch}
-                                onReset={handleSearch}
-                                className="hidden flex-1 max-w-xl md:block"
-                                noValidate
-                            >
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        placeholder="Buscar produtos..."
-                                        className="w-full rounded-full border border-rose-200 bg-rose-50 py-2.5 pl-4 pr-12 text-sm focus:border-rose-400 focus:outline-none focus:ring-1 focus:ring-rose-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                        aria-label="Buscar produtos"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="absolute right-0 top-1/2 -translate-y-1/2 rounded-r-full bg-gradient-to-r from-rose-500 to-pink-500 p-2 text-white hover:from-rose-600 hover:to-pink-600"
-                                        aria-label="Buscar"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                            />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </form>
+                            <SearchBar variant="desktop" />
 
                             {/* Actions */}
                             <div className="flex items-center gap-2 md:gap-4">
@@ -167,43 +122,7 @@ export default function StoreHomepage({ categories, featuredProducts, newProduct
                         </div>
 
                         {/* Mobile Search Bar */}
-                        <form
-                            onSubmit={handleSearch}
-                            onReset={handleSearch}
-                            className="pb-4 md:hidden"
-                            noValidate
-                        >
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    placeholder="Buscar produtos..."
-                                    className="w-full rounded-full border border-rose-200 bg-rose-50 py-2.5 pl-4 pr-12 text-sm focus:border-rose-400 focus:outline-none focus:ring-1 focus:ring-rose-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                                    aria-label="Buscar produtos"
-                                />
-                                <button
-                                    type="submit"
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 rounded-r-full bg-gradient-to-r from-rose-500 to-pink-500 p-2 text-white hover:from-rose-600 hover:to-pink-600"
-                                    aria-label="Buscar"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                        />
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
+                        <SearchBar variant="mobile" />
                     </div>
                 </header>
 

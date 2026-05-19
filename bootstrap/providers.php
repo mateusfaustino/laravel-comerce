@@ -3,6 +3,7 @@
 use App\Modules\Authentication\Infrastructure\Providers\AuthenticationServiceProvider;
 use App\Modules\CategoryManagement\Infrastructure\Providers\CategoryManagementServiceProvider;
 use App\Modules\ProductManagement\Infrastructure\Providers\ProductManagementServiceProvider;
+use App\Modules\Search\Infrastructure\Providers\SearchServiceProvider;
 use App\Modules\Storefront\Infrastructure\Providers\StorefrontServiceProvider;
 use App\Modules\TagManagement\Infrastructure\Providers\TagManagementServiceProvider;
 use App\Providers\AppServiceProvider;
@@ -16,4 +17,5 @@ return [
     ProductManagementServiceProvider::class,
     StorefrontServiceProvider::class,
     TagManagementServiceProvider::class,
+    SearchServiceProvider::class,
 ];
