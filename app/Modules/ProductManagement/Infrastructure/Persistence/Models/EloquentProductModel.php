@@ -3,6 +3,7 @@
 namespace App\Modules\ProductManagement\Infrastructure\Persistence\Models;
 
 use App\Modules\CategoryManagement\Infrastructure\Persistence\Models\EloquentCategoryModel;
+use App\Modules\TagManagement\Infrastructure\Persistence\Models\EloquentTagModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -59,5 +60,15 @@ class EloquentProductModel extends Model
     public function thumbnail(): BelongsTo
     {
         return $this->belongsTo(EloquentFotoModel::class, 'thumbnail_foto_id');
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            EloquentTagModel::class,
+            'produtos_tags',
+            'produto_id',
+            'tag_id'
+        )->withTimestamps();
     }
 }

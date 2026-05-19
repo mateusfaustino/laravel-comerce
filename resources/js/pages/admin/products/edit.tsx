@@ -25,6 +25,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { TagPicker, type TagPickerValue } from '@/components/tag-picker';
 
 interface Product {
     id: number;
@@ -101,19 +102,23 @@ interface Props {
     variations: Variation[];
     cores: Cor[];
     selectedCategoryIds: number[];
+    selectedTags: { id: number; description: string }[];
 }
 
 const tamanhoRoupaAdultoOptions = ['PP', 'P', 'M', 'G', 'GG', 'XG'];
 const tamanhoRoupaCriancaOptions = ['2', '4', '6', '8', '10', '12', '14'];
 const tamanhoCalcadoOptions = ['32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 
-export default function ProductsEdit({ product, categories, subcategories, fotos, variations, cores, selectedCategoryIds }: Props) {
+export default function ProductsEdit({ product, categories, subcategories, fotos, variations, cores, selectedCategoryIds, selectedTags }: Props) {
     const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
     const [showVariationDialog, setShowVariationDialog] = useState(false);
     const [deleteVariationId, setDeleteVariationId] = useState<number | null>(null);
     const [deletingVariation, setDeletingVariation] = useState(false);
     const [deleteFotoId, setDeleteFotoId] = useState<number | null>(null);
     const [deletingFoto, setDeletingFoto] = useState(false);
+    const [tagsValue, setTagsValue] = useState<TagPickerValue[]>(
+        selectedTags.map((t) => ({ id: t.id, description: t.description })),
+    );
 
     const { data, setData, put, processing, errors } = useForm({
         nome: product.nome,
@@ -129,6 +134,7 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
         comprimento: product.comprimento !== null ? String(product.comprimento) : '',
         active: product.active,
         category_ids: selectedCategoryIds as number[],
+        tags: selectedTags.map((t) => t.id) as (number | string)[],
         thumbnail_foto_id: product.thumbnailFotoId !== null ? String(product.thumbnailFotoId) : '',
     });
 
@@ -204,7 +210,9 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/products/${product.id}`);
+        const tagsPayload: (number | string)[] = tagsValue.map((t) => (t.id !== undefined ? t.id : t.description));
+        setData('tags', tagsPayload);
+        setTimeout(() => put(`/admin/products/${product.id}`), 0);
     };
 
     const handleVariationSubmit = (e: React.FormEvent) => {
@@ -513,6 +521,20 @@ export default function ProductsEdit({ product, categories, subcategories, fotos
                                 );
                             })}
                             {errors.category_ids && <p className="text-sm text-destructive">{errors.category_ids}</p>}
+                        </CardContent>
+                    </Card>
+
+                    {/* Tags */}
+                    <Card className="max-w-3xl">
+                        <CardHeader>
+                            <CardTitle>Tags</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <TagPicker
+                                value={tagsValue}
+                                onChange={setTagsValue}
+                                error={errors.tags as string | undefined}
+                            />
                         </CardContent>
                     </Card>
 

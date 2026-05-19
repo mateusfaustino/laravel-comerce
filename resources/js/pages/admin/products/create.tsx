@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import { TagPicker, type TagPickerValue } from '@/components/tag-picker';
 
 interface Category {
     id: number;
@@ -85,11 +86,13 @@ export default function ProductsCreate({ categories, subcategories, cores }: Pro
         comprimento: '' as string,
         active: true,
         category_ids: [] as number[],
+        tags: [] as (number | string)[],
         variations: [] as VariationRow[],
         fotos: [] as File[],
     });
 
     const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
+    const [tagsValue, setTagsValue] = useState<TagPickerValue[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const slugify = useCallback((text: string): string => {
@@ -210,7 +213,10 @@ export default function ProductsCreate({ categories, subcategories, cores }: Pro
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/products');
+        const tagsPayload: (number | string)[] = tagsValue.map((t) => (t.id !== undefined ? t.id : t.description));
+        setData('tags', tagsPayload);
+        // Send next-tick so setData is flushed before post.
+        setTimeout(() => post('/admin/products'), 0);
     };
 
     return (
@@ -473,6 +479,20 @@ export default function ProductsCreate({ categories, subcategories, cores }: Pro
                                 );
                             })}
                             {errors.category_ids && <p className="text-sm text-destructive">{errors.category_ids}</p>}
+                        </CardContent>
+                    </Card>
+
+                    {/* Tags */}
+                    <Card className="max-w-3xl">
+                        <CardHeader>
+                            <CardTitle>Tags</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <TagPicker
+                                value={tagsValue}
+                                onChange={setTagsValue}
+                                error={errors.tags as string | undefined}
+                            />
                         </CardContent>
                     </Card>
 

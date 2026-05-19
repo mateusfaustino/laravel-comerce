@@ -104,5 +104,13 @@ Enum TamanhoCalcado {
     48
 }
 
+table tags {
+    id: <<PK>>
+    description: varchar(255) NOT NULL
+}
 
-
+table produtos_tags {
+    id: <<PK>>
+    id_product: <<FK>> para produtos
+    id_tag: <<FK>> para tags
+}

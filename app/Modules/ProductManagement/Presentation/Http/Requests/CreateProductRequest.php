@@ -32,6 +32,8 @@ class CreateProductRequest extends FormRequest
             'active' => ['boolean'],
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['integer', 'exists:categories,id'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['nullable'],
             'variations' => ['nullable', 'array'],
             'variations.*.cor_id' => ['nullable', 'integer', 'exists:cores,id'],
             'variations.*.tamanho_roupa_adulto' => ['nullable', 'string', 'in:PP,P,M,G,GG,XG'],

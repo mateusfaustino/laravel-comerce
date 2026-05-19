@@ -20,6 +20,8 @@ use App\Modules\ProductManagement\Domain\Repositories\ProductRepositoryInterface
 use App\Modules\ProductManagement\Domain\Repositories\ProductVariationRepositoryInterface;
 use App\Modules\ProductManagement\Presentation\Http\Requests\CreateProductRequest;
 use App\Modules\ProductManagement\Presentation\Http\Requests\UpdateProductRequest;
+use App\Modules\TagManagement\Application\Services\SyncProductTagsService;
+use App\Modules\TagManagement\Domain\Repositories\TagRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +44,8 @@ class ProductController extends Controller
         private UpdateProductService $updateProductService,
         private DeleteProductService $deleteProductService,
         private ActivateProductService $activateProductService,
+        private TagRepositoryInterface $tagRepository,
+        private SyncProductTagsService $syncProductTagsService,
     ) {}
 
     public function index(Request $request): Response
@@ -122,6 +126,11 @@ class ProductController extends Controller
 
         $product = $this->createProductService->execute($dto);
 
+        $tagsPayload = $request->input('tags', []);
+        if (is_array($tagsPayload) && $product->getId() !== null) {
+            $this->syncProductTagsService->execute((int) $product->getId(), $tagsPayload);
+        }
+
         if ($request->hasFile('fotos')) {
             foreach ($request->file('fotos') as $file) {
                 $path = $file->store('products', 'public');
@@ -150,10 +159,13 @@ class ProductController extends Controller
         $fotos = $this->fotoRepository->findByProductId($id);
         $variations = $this->variationRepository->findByProductId($id);
 
+        $tags = $this->tagRepository->findByProductId($id);
+
         return Inertia::render('admin/products/show', [
             'product' => $this->toArray($product),
             'fotos' => array_map([$this, 'fotoToArray'], $fotos),
             'variations' => array_map([$this, 'variationToArray'], $variations),
+            'tags' => array_map([$this, 'tagToArray'], $tags),
         ]);
     }
 
@@ -183,6 +195,7 @@ class ProductController extends Controller
         $variations = $this->variationRepository->findByProductId($id);
         $cores = $this->corRepository->findAll();
         $selectedCategoryIds = $this->productRepository->getCategoryIds($id);
+        $tags = $this->tagRepository->findByProductId($id);
 
         return Inertia::render('admin/products/edit', [
             'product' => $this->toArray($product),
@@ -192,6 +205,7 @@ class ProductController extends Controller
             'variations' => array_map([$this, 'variationToArray'], $variations),
             'cores' => array_map(fn ($c) => ['id' => $c->getId(), 'nome' => $c->getNome(), 'codRgb' => $c->getCodRgb()], $cores),
             'selectedCategoryIds' => $selectedCategoryIds,
+            'selectedTags' => array_map([$this, 'tagToArray'], $tags),
         ]);
     }
 
@@ -216,6 +230,11 @@ class ProductController extends Controller
         );
 
         $this->updateProductService->execute($dto);
+
+        $tagsPayload = $request->input('tags');
+        if (is_array($tagsPayload)) {
+            $this->syncProductTagsService->execute($id, $tagsPayload);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produto atualizado com sucesso.');
@@ -300,6 +319,17 @@ class ProductController extends Controller
             'productId' => $foto->getProductId(),
             'descricao' => $foto->getDescricao(),
             'ordem' => $foto->getOrdem(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function tagToArray($tag): array
+    {
+        return [
+            'id' => $tag->getId(),
+            'description' => $tag->getDescription(),
         ];
     }
 }

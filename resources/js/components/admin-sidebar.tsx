@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronRight, Home, LayoutGrid, List, Palette, PlusCircle, Tag, Image } from 'lucide-react';
+import { ChevronRight, Home, LayoutGrid, List, Palette, PlusCircle, Tag, Tags, Image } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import {
     Collapsible,
@@ -29,6 +29,7 @@ export function AdminSidebar() {
     const isProductsOpen = url.startsWith('/admin/products');
     const isCoresOpen = url.startsWith('/admin/cores');
     const isFotosOpen = url.startsWith('/admin/fotos');
+    const isTagsOpen = url.startsWith('/admin/tags');
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -215,6 +216,47 @@ export function AdminSidebar() {
                                             <Link href="/admin/fotos/create" prefetch>
                                                 <PlusCircle />
                                                 <span>Adicionar Foto</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                </SidebarMenuSub>
+                            </CollapsibleContent>
+                        </SidebarMenuItem>
+                    </Collapsible>
+
+                    <Collapsible defaultOpen={isTagsOpen} className="group/collapsible">
+                        <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                                <SidebarMenuButton
+                                    tooltip={{ children: 'Tags' }}
+                                    isActive={isCurrentOrParentUrl('/admin/tags')}
+                                >
+                                    <Tags />
+                                    <span>Tags</span>
+                                    <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                                </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenuSub>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/tags')}
+                                        >
+                                            <Link href="/admin/tags" prefetch>
+                                                <List />
+                                                <span>Listar Tags</span>
+                                            </Link>
+                                        </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                    <SidebarMenuSubItem>
+                                        <SidebarMenuSubButton
+                                            asChild
+                                            isActive={isCurrentUrl('/admin/tags/create')}
+                                        >
+                                            <Link href="/admin/tags/create" prefetch>
+                                                <PlusCircle />
+                                                <span>Criar Tag</span>
                                             </Link>
                                         </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>

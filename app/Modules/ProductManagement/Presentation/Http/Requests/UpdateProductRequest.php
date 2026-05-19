@@ -34,6 +34,8 @@ class UpdateProductRequest extends FormRequest
             'active' => ['boolean'],
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['integer', 'exists:categories,id'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['nullable'],
             'thumbnail_foto_id' => ['nullable', 'integer', 'exists:fotos,id'],
         ];
     }

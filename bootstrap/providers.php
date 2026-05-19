@@ -4,6 +4,7 @@ use App\Modules\Authentication\Infrastructure\Providers\AuthenticationServicePro
 use App\Modules\CategoryManagement\Infrastructure\Providers\CategoryManagementServiceProvider;
 use App\Modules\ProductManagement\Infrastructure\Providers\ProductManagementServiceProvider;
 use App\Modules\Storefront\Infrastructure\Providers\StorefrontServiceProvider;
+use App\Modules\TagManagement\Infrastructure\Providers\TagManagementServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\FortifyServiceProvider;
 
@@ -14,4 +15,5 @@ return [
     CategoryManagementServiceProvider::class,
     ProductManagementServiceProvider::class,
     StorefrontServiceProvider::class,
+    TagManagementServiceProvider::class,
 ];

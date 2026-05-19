@@ -17,6 +17,7 @@ return [
             'edit_product',
             'delete_product',
             'manage_color',
+            'manage_tags',
         ],
     ],
 
